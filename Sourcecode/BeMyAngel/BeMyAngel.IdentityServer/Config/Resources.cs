@@ -11,7 +11,7 @@ namespace BeMyAngel.IdentityServer
 
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
-            return null;/*new[]
+            return new[]
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
@@ -21,7 +21,7 @@ namespace BeMyAngel.IdentityServer
                     Name = "Roles",
                     UserClaims = new List<string> { "patient", "psychiatrist" }
                 }
-            };*/
+            };
         }
 
     }

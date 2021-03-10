@@ -14,7 +14,6 @@ namespace BeMyAngel.IdentityServer
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
         }
 
         public IConfiguration Configuration { get; }
@@ -23,14 +22,13 @@ namespace BeMyAngel.IdentityServer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var identityServer = services.AddIdentityServer();
-
-            identityServer.AddInMemoryClients(Clients.GetClients());
-            //identityServcer.AddInMemoryIdentityResources(Resources.GetIdentityResources());
-            identityServer.AddInMemoryApiResources(ApiResources.GetResources());
-            identityServer.AddInMemoryApiScopes(ApiScopes.GetScopes());
-            identityServer.AddDeveloperSigningCredential();
-            identityServer.AddJwtBearerClientAuthentication();
+            services.AddIdentityServer()
+                    .AddInMemoryClients(Clients.GetClients())
+                    .AddInMemoryIdentityResources(Resources.GetIdentityResources())
+                    .AddInMemoryApiResources(ApiResources.GetResources())
+                    .AddInMemoryApiScopes(ApiScopes.GetScopes())
+                    .AddDeveloperSigningCredential()
+                    .AddJwtBearerClientAuthentication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

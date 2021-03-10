@@ -1,6 +1,8 @@
 using BeMyAngel.Persistance;
 using BeMyAngel.Service;
+using IdentityModel;
 using IdentityModel.Client;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,12 +39,37 @@ namespace BeMyAngel.Api
             services.AddControllers();
 
             services.AddAuthorization();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.Authority = _settings.Security.IdentityServer.Url;
-                options.Audience = ApiName;
-                options.RequireHttpsMetadata = false;
-            });
+            /* services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+             {
+                 options.Authority = _settings.Security.IdentityServer.Url;
+                 options.Audience = ApiName;
+                 options.RequireHttpsMetadata = false;
+             });*/
+            services.AddAuthentication()
+                .AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme,
+                    opt =>
+                    {
+                        opt.ApiName = ApiName;
+                        opt.Authority = _settings.Security.IdentityServer.Url;
+                        opt.RequireHttpsMetadata = true;
+                        opt.SupportedTokens = SupportedTokens.Jwt;
+                        //opt.JwtBearerEvents.OnAuthenticationFailed = OnJwtAuthenticationFailed;
+                        //opt.JwtBearerEvents.OnTokenValidated = OnJwtTokenValidated;
+                    }
+                );
+
+            services.AddAuthorization(
+                opt =>
+                {
+                    opt.AddPolicy("default",
+                        p =>
+                        {
+                           // p.Requirements.Add(new TokenAuthRequirement());
+                            p.RequireClaim(JwtClaimTypes.Scope, ApiName);
+                            p.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        }
+                    );
+                });
 
             services.AddSwaggerGen(options =>
             {
@@ -50,23 +77,41 @@ namespace BeMyAngel.Api
                 options.SwaggerDoc("v1", new OpenApiInfo { 
                     Title = ApiName, Version = "v1" 
                 });
-                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
+
+                options.AddSecurityDefinition(
+                    SecuritySchemeType.OAuth2.ToString(),
+                    new OpenApiSecurityScheme
                     {
-                        AuthorizationCode = new OpenApiOAuthFlow
+                        Name = "OAuth2 Authorization",
+                        Description = "Use OAuth2 authorization, in Header.",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.OAuth2,
+                        Flows = new OpenApiOAuthFlows
                         {
-                            AuthorizationUrl = new Uri(identityServerDisco.AuthorizeEndpoint),
-                            TokenUrl = new Uri(identityServerDisco.TokenEndpoint),
-                            Scopes = new Dictionary<string, string>
+                            ClientCredentials = new OpenApiOAuthFlow
                             {
-                                {"api.read", "Allows to read information from API"},
-                                {"api.write", "Allows to write information to API"}
-                            }
-                        }
+                                TokenUrl = new Uri(identityServerDisco.TokenEndpoint),
+                            },
+                        },
                     }
-                });
+                );
+
+                options.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = SecuritySchemeType.OAuth2.ToString(),
+                                },
+                            },
+                            new string[0]
+                        },
+                    }
+                );
             });
 
             _serviceStartUp.ConfigureServices(services);

@@ -22,7 +22,7 @@ namespace BeMyAngel.IdentityServer.Config
                         ApiScopes.Write
                     },
                     ApiSecrets = new List<Secret> {
-                        new Secret("aqswde")
+                        new Secret("1234")
                     }
                 }
             };
