@@ -6,13 +6,37 @@ using System.Linq;
 
 namespace BeMyAngel.IdentityServer.Config
 {
+
+    internal static class ClientsHelper
+    {
+        public static Client CreateResourceOwnerPasswordClient(string clientId, string clientName, params string[] allowedScopes) =>
+            new Client
+            {
+                ClientId = clientId,
+                ClientName = clientName,
+                AccessTokenLifetime = 24*60*60,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                AllowedScopes = allowedScopes,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AlwaysSendClientClaims = true,
+                RequireClientSecret = false,
+            };
+    }
+
     internal class Clients
     {
         public static IEnumerable<Client> GetClients()
         {
-            return new List<Client>
-            {
-                new Client
+            return new List<Client>() {
+                ClientsHelper.CreateResourceOwnerPasswordClient("AndroidApp.BeMyAngel", "BeMyAngel Android Application", new string[]
+                {
+                    ApiScopes.Read,
+                    ApiScopes.Write
+                })
+            };
+                
+                /*
+            new Client
                 {
                     ClientId = "BeMyAngelWebApp",
                     ClientName = "Main BeMyAngel WebApplication",
@@ -41,7 +65,7 @@ namespace BeMyAngel.IdentityServer.Config
                         ApiScopes.Write
                     }
                 }
-            };
+            };*/
         }
     }
 }

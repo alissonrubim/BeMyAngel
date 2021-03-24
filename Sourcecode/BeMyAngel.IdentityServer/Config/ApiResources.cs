@@ -22,9 +22,6 @@ namespace BeMyAngel.IdentityServer.Config
                         ApiScopes.Write,
                         ApiScopes.Read
                     },
-                    /*ApiSecrets = new List<Secret> {
-                        new Secret("Test1234".Sha256()) //ChangeMe
-                    },*/
                     UserClaims = new List<string> {
                         JwtClaimTypes.Email,
                         JwtClaimTypes.Role

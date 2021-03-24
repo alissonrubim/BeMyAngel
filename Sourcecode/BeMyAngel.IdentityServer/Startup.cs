@@ -31,14 +31,17 @@ namespace BeMyAngel.IdentityServer
                     .AddTestUsers(TestUsers.GetTestUsers())
                     .AddDeveloperSigningCredential();
 
-            services.AddAuthentication()
+
+            //LEIA SOBRE COMO COLOCAR O ACESSO AO USUARIO AQUI https://stackoverflow.com/questions/35304038/identityserver4-register-userservice-and-get-users-from-database-in-asp-net-core
+            /* Not enabled for now */
+            /* services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
                     options.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
                     options.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
                 });
+            */
 
             services.AddControllersWithViews();
         }

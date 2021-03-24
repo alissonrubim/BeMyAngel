@@ -9,18 +9,23 @@ namespace BeMyAngel.IdentityServer
 {
     internal class IdentityResources
     {
+        public static string Patient { get; } = "patient";
+        public static string Psychiatrist { get; } = "psychiatrist";
+        public static string Manager { get; } = "manager";
+
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new[]
             {
                 new IdentityServer4.Models.IdentityResources.OpenId(),
-                new IdentityServer4.Models.IdentityResources.Profile(),
                 new IdentityServer4.Models.IdentityResources.Email(),
                 new IdentityResource
                 {
                     Name = JwtClaimTypes.Role,
                     UserClaims = new List<string> {
-                        "patient", "psychiatrist"
+                        Patient,
+                        Psychiatrist,
+                        Manager
                     }
                 }
             };
