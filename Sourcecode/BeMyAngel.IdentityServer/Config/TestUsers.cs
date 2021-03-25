@@ -35,19 +35,17 @@ namespace BeMyAngel.IdentityServer.Config
                 /*List of Testable Patients*/
                 new TestUser {
                     SubjectId = "1F374696-77A8-422D-9996-046950E79727",
-                    Username = "pat1@testuser.com",
-                    Password = "1234",
+                    Username = "1F374696-77A8-422D-9996-046950E79727",
+                    Password = "",
                     Claims = new List<Claim> {
-                        new Claim(JwtClaimTypes.Email, "pat1@testuser.com"),
                         new Claim(JwtClaimTypes.Role, IdentityResources.Patient)
                     }
                 },
                 new TestUser {
                     SubjectId = "03ECDD23-A865-44C8-B28F-033DD0E6DD62",
-                    Username = "pat2@testuser.com",
-                    Password = "1234",
+                    Username = "03ECDD23-A865-44C8-B28F-033DD0E6DD62",
+                    Password = "",
                     Claims = new List<Claim> {
-                        new Claim(JwtClaimTypes.Email, "pat2@testuser.com"),
                         new Claim(JwtClaimTypes.Role, IdentityResources.Patient)
                     }
                 }

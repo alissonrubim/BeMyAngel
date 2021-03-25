@@ -23,13 +23,19 @@ namespace BeMyAngel.IdentityServer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentityServer()
-                    .AddInMemoryClients(Clients.GetClients())
-                    .AddInMemoryIdentityResources(IdentityResources.GetIdentityResources())
-                    .AddInMemoryApiResources(ApiResources.GetResources())
-                    .AddInMemoryApiScopes(ApiScopes.GetScopes())
-                    .AddTestUsers(TestUsers.GetTestUsers())
-                    .AddDeveloperSigningCredential();
+            services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+            })
+                .AddInMemoryClients(Clients.GetClients())
+                .AddInMemoryIdentityResources(IdentityResources.GetIdentityResources())
+                .AddInMemoryApiResources(ApiResources.GetResources())
+                .AddInMemoryApiScopes(ApiScopes.GetScopes())
+                .AddTestUsers(TestUsers.GetTestUsers())
+                .AddDeveloperSigningCredential();
 
 
             //LEIA SOBRE COMO COLOCAR O ACESSO AO USUARIO AQUI https://stackoverflow.com/questions/35304038/identityserver4-register-userservice-and-get-users-from-database-in-asp-net-core

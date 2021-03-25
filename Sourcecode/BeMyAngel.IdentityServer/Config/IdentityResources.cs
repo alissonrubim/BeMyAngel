@@ -11,7 +11,6 @@ namespace BeMyAngel.IdentityServer
     {
         public static string Patient { get; } = "patient";
         public static string Psychiatrist { get; } = "psychiatrist";
-        public static string Manager { get; } = "manager";
 
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
@@ -24,8 +23,7 @@ namespace BeMyAngel.IdentityServer
                     Name = JwtClaimTypes.Role,
                     UserClaims = new List<string> {
                         Patient,
-                        Psychiatrist,
-                        Manager
+                        Psychiatrist
                     }
                 }
             };

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeMyAngel.Api", "BeMyAngel.Api\BeMyAngel.Api.csproj", "{E22E1E03-2EDD-454B-9ED6-D0A15B5B6436}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeMyAngel.Service", "BeMyAngel\BeMyAngel.Service.csproj", "{D69D03D6-5A6D-445C-BF50-A82F5D621DA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeMyAngel.Service", "BeMyAngel.Service\BeMyAngel.Service.csproj", "{D69D03D6-5A6D-445C-BF50-A82F5D621DA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeMyAngel.Persistance", "BeMyAngel.Persistance\BeMyAngel.Persistance.csproj", "{63020C66-FB52-455A-AAFD-5AE6B3EC6091}"
 EndProject

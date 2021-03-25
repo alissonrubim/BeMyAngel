@@ -18,6 +18,7 @@ namespace BeMyAngel.IdentityServer.Config
                     Name = "BeMyAngelApi",
                     DisplayName = "BeMyAngelApi",
                     Description = "Allow the application to access BeMyAngelApi",
+                    ApiSecrets = new Secret[] { new Secret("1234".Sha256()) },
                     Scopes = new List<string> {
                         ApiScopes.Write,
                         ApiScopes.Read

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\BeMyAngel\BeMyAngel.Service.csproj" />
+    <ProjectReference Include="..\BeMyAngel.Service\BeMyAngel.Service.csproj" />
   </ItemGroup>
 
 

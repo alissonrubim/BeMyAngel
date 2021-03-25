@@ -26,7 +26,6 @@ namespace BeMyAngel.Api
 {
     public class Startup
     {
-        private const string ApiName = "BeMyAngelApi";
         private readonly Service.Startup _serviceStartUp;
         private Settings _settings;
         public Startup(IConfiguration configuration)
@@ -40,71 +39,46 @@ namespace BeMyAngel.Api
         {
             services.AddControllers();
 
-            services.AddAuthorization();
-
-            /*services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication("Bearer", options =>
+            /** Configure IdentityServer Authentication **/
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.ApiName = ApiName;
-                    options.ApiSecret = "Test1234";
-                    options.Authority = "https://localhost:5001";
-                });*/
-
-
-            // JWT tokens
-            services.AddAuthentication("token").AddJwtBearer("token", options =>
-             {
-                 options.Authority = "https://localhost:5001";
-                 options.Audience = ApiName;
-                 var secretKey = "Test1234";
-                 var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-                 //options.TokenValidationParameters.IssuerSigningKey = signingKey;
-             });
-
-
-            services.AddSwaggerGen(options =>
-            {
-                var identityServerDisco = GetIdentityServerDiscoveryDocument();
-                options.SwaggerDoc("v1", new OpenApiInfo { 
-                    Title = ApiName, Version = "v1" 
+                    options.Authority = _settings.Security.IdentityServer.AuthorityUrl;
+                    options.ApiName = _settings.Security.IdentityServer.ApiName;
+                    options.ApiSecret = _settings.Security.IdentityServer.ApiSecret;
                 });
+            
 
-                /*options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            /** Configure Swagger **/
+            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
+                    Description ="JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
                     {
-                        AuthorizationCode = new OpenApiOAuthFlow
+                        new OpenApiSecurityScheme
                         {
-                            AuthorizationUrl = new Uri("https://localhost:5051/connect/authorize"),
-                            TokenUrl = new Uri("https://localhost:5051/connect/token"),
-                            Scopes = new Dictionary<string, string>
+                            Reference = new OpenApiReference
                             {
-                                {"api.read", "api.write"}
-                            }
-                        }
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            },
+                            Scheme = JwtBearerDefaults.AuthenticationScheme,
+                            Name = JwtBearerDefaults.AuthenticationScheme,
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
                     }
-                });*/
-
-                options.AddSecurityDefinition("Bearer", //Name the security scheme
-                    new OpenApiSecurityScheme
-                    {
-                        Description = "JWT Authorization header using the Bearer scheme.",
-                        Type = SecuritySchemeType.Http, //We set the scheme type to http since we're using bearer authentication
-                        Scheme = "bearer" //The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
-                    });
-
-                                options.AddSecurityRequirement(new OpenApiSecurityRequirement{
-                    {
-                        new OpenApiSecurityScheme{
-                            Reference = new OpenApiReference{
-                                Id = "Bearer", //The name of the previously defined security scheme.
-                                Type = ReferenceType.SecurityScheme
-                            }
-                        },new List<string>()
-                    }
-});
-
+                });
             });
 
             _serviceStartUp.ConfigureServices(services);
@@ -113,6 +87,9 @@ namespace BeMyAngel.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
+            app.UseAuthentication();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -123,7 +100,6 @@ namespace BeMyAngel.Api
             app.UseRouting();
 
             app.UseAuthorization();
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
@@ -155,7 +131,9 @@ namespace BeMyAngel.Api
                 {
                     IdentityServer = new IdentityServerSettings
                     {
-                        Url = configuration.GetValue<string>("Security:IdentityServer:Url")
+                        AuthorityUrl = configuration.GetValue<string>("Security:IdentityServer:AuthorityUrl"),
+                        ApiName = configuration.GetValue<string>("Security:IdentityServer:ApiName"),
+                        ApiSecret = configuration.GetValue<string>("Security:IdentityServer:ApiSecret")
                     }
                 }
             };
@@ -164,7 +142,7 @@ namespace BeMyAngel.Api
         private DiscoveryDocumentResponse GetIdentityServerDiscoveryDocument()
         {
             var client = new HttpClient();
-            var disco = client.GetDiscoveryDocumentAsync(_settings.Security.IdentityServer.Url).Result;
+            var disco = client.GetDiscoveryDocumentAsync(_settings.Security.IdentityServer.AuthorityUrl).Result;
             if (disco.IsError) 
                 throw new Exception($"It was not possible to connect to the identity server. Error: {disco.Error}");
             return disco;

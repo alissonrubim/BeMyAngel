@@ -20,6 +20,8 @@ namespace BeMyAngel.Api
 
     public class IdentityServerSettings
     {
-        public string Url { get; set; }
+        public string AuthorityUrl { get; set; }
+        public string ApiName { get; set; }
+        public string ApiSecret { get; set; }
     }
 }
