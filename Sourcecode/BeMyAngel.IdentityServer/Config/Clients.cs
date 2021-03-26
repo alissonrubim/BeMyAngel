@@ -9,7 +9,7 @@ namespace BeMyAngel.IdentityServer.Config
 
     internal static class ClientsHelper
     {
-        public static Client CreateResourceOwnerPasswordClient(string clientId, string clientName, params string[] allowedScopes) =>
+        public static Client CreateResourceOwnerPasswordClient(string clientId, string clientName, string[] allowedScopes, string[] allowedCorsOrigins) =>
             new Client
             {
                 ClientId = clientId,
@@ -20,6 +20,7 @@ namespace BeMyAngel.IdentityServer.Config
                 AlwaysIncludeUserClaimsInIdToken = true,
                 AlwaysSendClientClaims = true,
                 RequireClientSecret = false,
+                AllowedCorsOrigins = allowedCorsOrigins
             };
     }
 
@@ -32,6 +33,11 @@ namespace BeMyAngel.IdentityServer.Config
                 {
                     ApiScopes.Read,
                     ApiScopes.Write
+                }, 
+                new string[]
+                {
+                    "http://localhost:3000",
+                    "https://localhost:5001"
                 })
             };
                 

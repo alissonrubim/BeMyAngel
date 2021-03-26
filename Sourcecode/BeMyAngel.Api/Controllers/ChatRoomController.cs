@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BeMyAngel.Api.Controllers
@@ -22,11 +23,13 @@ namespace BeMyAngel.Api.Controllers
         }
 
         [HttpGet("Current")]
-        public ChatRoom GetCurrent(int id)
+        public ChatRoom GetCurrent()
         {
+            var identity = (ClaimsIdentity)User.Identity;
+
             return new ChatRoom()
             {
-                ChatRoomId = id
+                ChatRoomId = 14
             };
             //_service.Get(id);
         }

@@ -53,30 +53,69 @@ namespace BeMyAngel.Api
             services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                var disco = GetIdentityServerDiscoveryDocument();
+
+                /** Configure a Bearer token authentication **/
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description ="JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = JwtBearerDefaults.AuthenticationScheme
                 });
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                 {
+                     {
+                         new OpenApiSecurityScheme
+                         {
+                             Reference = new OpenApiReference
+                             {
+                                 Type = ReferenceType.SecurityScheme,
+                                 Id = "Bearer"
+                             },
+                             Scheme = JwtBearerDefaults.AuthenticationScheme,
+                             Name = JwtBearerDefaults.AuthenticationScheme,
+                             In = ParameterLocation.Header,
+
+                         },
+                         disco.ScopesSupported.ToList()
+                     }
+                 });
+
+                /** Configure a OAuth2 with Password flow authentication **/
+                c.AddSecurityDefinition("OAuth2", new OpenApiSecurityScheme
+                {
+                    Description ="JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Password = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(disco.AuthorizeEndpoint),
+                            TokenUrl = new Uri(disco.TokenEndpoint)
+                        }
+                    },
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference
-                            {
+                            Reference = new OpenApiReference {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = JwtBearerDefaults.AuthenticationScheme
+                                Id = "OAuth2"
                             },
-                            Scheme = JwtBearerDefaults.AuthenticationScheme,
+                            Scheme = "OAuth2",
                             Name = JwtBearerDefaults.AuthenticationScheme,
                             In = ParameterLocation.Header,
-
                         },
-                        new List<string>()
+                        disco.ScopesSupported.ToList()
                     }
                 });
             });
