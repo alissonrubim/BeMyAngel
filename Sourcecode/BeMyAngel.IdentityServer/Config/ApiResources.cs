@@ -24,6 +24,7 @@ namespace BeMyAngel.IdentityServer.Config
                         ApiScopes.Read
                     },
                     UserClaims = new List<string> {
+                        JwtClaimTypes.Id,
                         JwtClaimTypes.Email,
                         JwtClaimTypes.Role
                     }

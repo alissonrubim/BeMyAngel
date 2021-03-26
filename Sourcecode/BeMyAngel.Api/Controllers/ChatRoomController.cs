@@ -1,6 +1,5 @@
 ﻿using BeMyAngel.Service.Models;
 using BeMyAngel.Service.Services;
-using BeMyAngel.Service.Services.ChatRoomService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;

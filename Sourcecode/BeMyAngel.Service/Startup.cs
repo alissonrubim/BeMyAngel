@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using BeMyAngel.Service.Services.ChatRoomService;
+using BeMyAngel.Service.Services;
+using BeMyAngel.Service.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -20,8 +21,13 @@ namespace BeMyAngel.Service
         {
             services.AddAutoMapper(typeof(Startup));
             services.AddSingleton(_settings);
-            services.AddScoped<IChatRoomService, ChatRoomService>();
             _persistanceStartup.ConfigureServices(services);
+
+            /** Register Services **/
+            services.AddScoped<IChatRoomService, ChatRoomService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserRoleService, UserRoleService>();
         }
     }
 }

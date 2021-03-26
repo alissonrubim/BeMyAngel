@@ -1,6 +1,10 @@
 using BeMyAngel.IdentityServer.Config;
+using BeMyAngel.IdentityServer.Services;
+using BeMyAngel.IdentityServer.Services.Implementations;
 using IdentityServer4;
+using IdentityServer4.Services;
 using IdentityServer4.Test;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,15 +16,14 @@ namespace BeMyAngel.IdentityServer
 {
     public class Startup
     {
+        private readonly Service.Startup _serviceStartUp;
+        private Settings _settings;
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _settings = Settings.GetSettings(configuration);
+            _serviceStartUp = new Service.Startup(_settings.Service);
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer(options =>
@@ -35,7 +38,12 @@ namespace BeMyAngel.IdentityServer
                 .AddInMemoryApiResources(ApiResources.GetResources())
                 .AddInMemoryApiScopes(ApiScopes.GetScopes())
                 .AddTestUsers(TestUsers.GetTestUsers())
-                .AddDeveloperSigningCredential();
+                .AddDeveloperSigningCredential()
+                .AddProfileService<ProfileService>();
+
+            services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerValidatorService>();
+            services.AddTransient<IResourceOwnerValidatorService, ResourceOwnerValidatorService>();
+            services.AddTransient<IProfileService, ProfileService>();
 
 
             //LEIA SOBRE COMO COLOCAR O ACESSO AO USUARIO AQUI https://stackoverflow.com/questions/35304038/identityserver4-register-userservice-and-get-users-from-database-in-asp-net-core
@@ -50,9 +58,10 @@ namespace BeMyAngel.IdentityServer
             */
 
             services.AddControllersWithViews();
+
+            _serviceStartUp.ConfigureServices(services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

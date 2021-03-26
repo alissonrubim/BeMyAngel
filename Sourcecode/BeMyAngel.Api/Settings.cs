@@ -1,5 +1,6 @@
 ﻿using BeMyAngel.Persistance;
 using BeMyAngel.Service;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,29 @@ namespace BeMyAngel.Api
     {
        public ServiceSettings Service { get; set; }
        public SecuritySettings Security { get; set; }
+
+       public static Settings GetSettings(IConfiguration configuration)
+       {
+            return new Settings
+            {
+                Service = new ServiceSettings
+                {
+                    Persistance = new PersistanceSettings
+                    {
+                        DatabaseConnectionString = configuration.GetValue<string>("Service:Persistance:DatabaseConnectionString")
+                    }
+                },
+                Security = new SecuritySettings
+                {
+                    IdentityServer = new IdentityServerSettings
+                    {
+                        AuthorityUrl = configuration.GetValue<string>("Security:IdentityServer:AuthorityUrl"),
+                        ApiName = configuration.GetValue<string>("Security:IdentityServer:ApiName"),
+                        ApiSecret = configuration.GetValue<string>("Security:IdentityServer:ApiSecret")
+                    }
+                }
+            };
+       }
     }
 
     public class SecuritySettings

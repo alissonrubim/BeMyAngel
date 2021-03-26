@@ -30,7 +30,7 @@ namespace BeMyAngel.Api
         private Settings _settings;
         public Startup(IConfiguration configuration)
         {
-            _settings = GetSettings(configuration);
+            _settings = Settings.GetSettings(configuration);
             _serviceStartUp = new Service.Startup(_settings.Service);
         }
 
@@ -114,29 +114,6 @@ namespace BeMyAngel.Api
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Version 1.0");
                 });
             }
-        }
-
-        private Settings GetSettings(IConfiguration configuration)
-        {
-            return new Settings
-            {
-                Service = new ServiceSettings
-                {
-                    Persistance = new PersistanceSettings
-                    {
-                        DatabaseConnectionString = configuration.GetValue<string>("Service:Persistance:DatabaseConnectionString")
-                    }
-                },
-                Security = new SecuritySettings
-                {
-                    IdentityServer = new IdentityServerSettings
-                    {
-                        AuthorityUrl = configuration.GetValue<string>("Security:IdentityServer:AuthorityUrl"),
-                        ApiName = configuration.GetValue<string>("Security:IdentityServer:ApiName"),
-                        ApiSecret = configuration.GetValue<string>("Security:IdentityServer:ApiSecret")
-                    }
-                }
-            };
         }
 
         private DiscoveryDocumentResponse GetIdentityServerDiscoveryDocument()
