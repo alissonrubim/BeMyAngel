@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BeMyAngel.Service.Models.Collections
+﻿namespace BeMyAngel.Service.Models.Collections
 {
     public static class ChatRoomEventTypes
     {

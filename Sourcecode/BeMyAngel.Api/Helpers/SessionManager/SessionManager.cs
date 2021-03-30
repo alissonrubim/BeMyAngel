@@ -2,10 +2,9 @@
 using BeMyAngel.Service.Models;
 using BeMyAngel.Service.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BeMyAngel.Api.Helpers.SessionManager
 {
@@ -33,25 +32,26 @@ namespace BeMyAngel.Api.Helpers.SessionManager
             return session;
         }
 
-        public void ProcessRequest(HttpContext httpContext)
+        public void ProcessRequest(ActionExecutingContext filterContext)
         {
             //Get the current session token
-            var cookie = httpContext.Request.Cookies[SessionToeknCookieName];
+            var cookie = filterContext.HttpContext.Request.Cookies[SessionToeknCookieName];
             if (cookie == null)
             {
                 //If does not exists, then create a new token
-                CreateNewSession(httpContext);
+                CreateNewSession(filterContext.HttpContext);
+                filterContext.Result = new RedirectResult(filterContext.HttpContext.Request.Path);
             }
             else
             {
                 //If exists, check if the token is valid
                 var session = _sessionService.GetByToken(cookie);
-                if (IsValid(session, httpContext))
+                if (IsValid(session, filterContext.HttpContext))
                 {
                     _sessionService.Renew(session);
 
                     //After dealing with the sessions, we check if has a user logged in, if so, attach the user to the session
-                    var userId = AuthenticationHelper.GetCurrentUserId(httpContext);
+                    var userId = AuthenticationHelper.GetCurrentUserId(filterContext.HttpContext);
                     if (userId.HasValue)
                     {
                         if (!session.UserId.HasValue)
@@ -70,7 +70,8 @@ namespace BeMyAngel.Api.Helpers.SessionManager
                 }
                 else
                 {
-                    CreateNewSession(httpContext);
+                    CreateNewSession(filterContext.HttpContext);
+                    filterContext.Result = new RedirectResult(filterContext.HttpContext.Request.Path);
                 }
             }
         }
@@ -83,8 +84,13 @@ namespace BeMyAngel.Api.Helpers.SessionManager
                 UserAgent = httpContext.Request.Headers["User-Agent"]
             });
             var session = _sessionService.GetById(sessionId);
-            httpContext.Response.Cookies.Append(SessionToeknCookieName, session.Token);
-            httpContext.Response.Redirect(httpContext.Request.Path);
+            httpContext.Response.Cookies.Append(SessionToeknCookieName, session.Token, new CookieOptions
+            {
+                HttpOnly = false,
+                Path = "/" ,
+                SameSite = SameSiteMode.None,
+                Secure = true
+            });
         }
         
         private bool IsValid(Session session, HttpContext httpContext)

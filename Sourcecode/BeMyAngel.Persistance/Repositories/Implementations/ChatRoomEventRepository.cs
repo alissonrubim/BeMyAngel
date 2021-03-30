@@ -1,8 +1,6 @@
 ﻿using BeMyAngel.Persistance.Helpers;
 using BeMyAngel.Persistance.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BeMyAngel.Persistance.Repositories.Implementations
 {
@@ -14,7 +12,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
             _database = database;
         }
 
-        public IEnumerable<ChatRoomEventDto> GetByChatRoomId(int ChatRoomId)
+        public IEnumerable<ChatRoomEventDto> GetAllByChatRoomId(int ChatRoomId)
         {
             return _database.FetchAll<ChatRoomEventDto>(@"SELECT 
                                                             [ChatRoomEventId],
@@ -26,6 +24,27 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                         FROM [dbo].[ChatRoomEvent]
                                                         WHERE
                                                            [ChatRoomId] = @ChatRoomId", new { ChatRoomId });
+        }
+
+        public ChatRoomEventDto GetById(int ChatRoomEventId)
+        {
+            return _database.Fetch<ChatRoomEventDto>(@"SELECT 
+                                                            [ChatRoomEventId],
+	                                                        [ChatRoomId],
+	                                                        [ChatRoomEventTypeId],
+	                                                        [CreatedAt],
+	                                                        [Data],
+	                                                        [SessionId]
+                                                        FROM [dbo].[ChatRoomEvent]
+                                                        WHERE
+                                                           [ChatRoomEventId] = @ChatRoomEventId", new { ChatRoomEventId });
+        }
+
+        public int Insert(ChatRoomEventDto ChatRoomEvent)
+        {
+            return _database.Fetch<int>(@"INSERT INTO [dbo].[ChatRoomEvent]([ChatRoomId], [ChatRoomEventTypeId], [CreatedAt], [Data], [SessionId])  
+                                          OUTPUT INSERTED.ChatRoomEventId  
+                                          VALUES(@ChatRoomId, @ChatRoomEventTypeId, @CreatedAt, @Data, @SessionId)", ChatRoomEvent);
         }
     }
 }

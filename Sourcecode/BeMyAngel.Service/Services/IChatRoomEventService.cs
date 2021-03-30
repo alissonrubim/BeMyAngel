@@ -7,6 +7,8 @@ namespace BeMyAngel.Service.Services
 {
     public interface IChatRoomEventService
     {
-        IEnumerable<ChatRoomEvent> GetByChatRoomId(int ChatRoomId);
+        IEnumerable<ChatRoomEvent> GetAllByChatRoomId(int ChatRoomId);
+        ChatRoomEvent GetById(int ChatRoomEventId);
+        int CreatePostMessageEvent(Session Session, string Message);
     }
 }

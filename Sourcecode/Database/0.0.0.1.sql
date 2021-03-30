@@ -32,12 +32,14 @@ VALUES ('Chat was created', 'CreateChat'),
        ('Chat was terminated', 'TerminateChat');
 
 CREATE TABLE [dbo].[ChatRoomEvent](
+   [ChatRoomEventId] INT NOT NULL IDENTITY,
    [ChatRoomId] INT NOT NULL,
    [ChatRoomEventTypeId] INT NOT NULL,
    [SessionId] INT NOT NULL,
-   [CreatedAt] DATETIME NOT NULL,
+   [CreatedAt] DATETIMEOFFSET NOT NULL,
    [Data] VARCHAR(MAX) NULL
 );
+ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_PK] PRIMARY KEY ([ChatRoomEventId]);
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoom] FOREIGN KEY ([ChatRoomId]) REFERENCES [dbo].[ChatRoom]([ChatRoomId]); 
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoomEventType] FOREIGN KEY ([ChatRoomEventTypeId]) REFERENCES [dbo].[ChatRoomEventType]([ChatRoomEventTypeId]); 
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_Session] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Session]([SessionId]); 

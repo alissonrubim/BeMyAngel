@@ -1,15 +1,12 @@
 ﻿using BeMyAngel.Service.Models;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BeMyAngel.Api.Helpers.SessionManager
 {
     public interface ISessionManager
     {
-        void ProcessRequest(HttpContext httpContext);
+        void ProcessRequest(ActionExecutingContext filterContext);
         Session GetCurrentSession(HttpContext httpContext);
     }
 }

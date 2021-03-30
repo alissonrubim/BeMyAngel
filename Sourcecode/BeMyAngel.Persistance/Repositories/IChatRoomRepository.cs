@@ -1,8 +1,4 @@
-﻿using BeMyAngel.Persistance.Generics;
-using BeMyAngel.Persistance.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BeMyAngel.Persistance.Models;
 
 namespace BeMyAngel.Persistance.Repositories
 {
