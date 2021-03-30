@@ -2,7 +2,6 @@
 using BeMyAngel.Service.Services;
 using BeMyAngel.Service.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace BeMyAngel.Service
 {
@@ -28,6 +27,8 @@ namespace BeMyAngel.Service
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
+            services.AddScoped<ISessionService, SessionService>();
+            services.AddScoped<IChatRoomEventService, ChatRoomEventService>();
         }
     }
 }

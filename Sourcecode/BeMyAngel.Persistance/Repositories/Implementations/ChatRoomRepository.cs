@@ -13,40 +13,20 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
         {
             _database = database;
         }
-        public ChatRoomDto Get(int userId, int chatRoomId)
+        public ChatRoomDto GetById(int ChatRoomId)
         {
             return _database.Fetch<ChatRoomDto>(@"SELECT 
-                                                    CR.[ChatRoomId], 
-                                                    CR.[CreatedAtDateTime], 
-                                                    CR.[TerminatedAtDateTime] 
-                                                FROM [ChatRoom] CR
-                                                INNER JOIN [ChatRoomUser] CRU on CRU.[ChatRoomId] = CR.[ChatRoomId]
+                                                    cr.[ChatRoomId], 
+                                                    cr.[CreatedAt], 
+                                                    cr.[TerminatedAt] 
+                                                FROM [ChatRoom] cr
                                                 WHERE 
-                                                    CR.[ChatRoomId] = @ChatRoomId
-                                                    and CRU.[UserId] = @UserId", new { ChatRoomId = chatRoomId, UserId = userId });
+                                                    cr.[ChatRoomId] = @ChatRoomId", new { ChatRoomId });
         }
 
-        public ChatRoomDto GetCurrent(int userId)
-        {
-            return _database.Fetch<ChatRoomDto>(@"SELECT 
-                                                    CR.[ChatRoomId], 
-                                                    CR.[CreatedAtDateTime], 
-                                                    CR.[TerminatedAtDateTime] 
-                                                FROM [ChatRoom] CR
-                                                INNER JOIN [ChatRoomUser] CRU on CRU.[ChatRoomId] = CR.[ChatRoomId]
-                                                WHERE 
-                                                    CRU.[UserId] = @UserId
-                                                    and [TerminateAtDateTime] IS NULL", new { UserId = userId });
-        }
-
-        public int Insert(ChatRoomDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(ChatRoomDto dto)
-        {
-            _database.Execute(@"UPDATE [ChatRoom] SET [TerminateAtDateTime] = @TerminateAtDateTime WHERE [ChatRoomId] = @ChatRoomId", dto);
+        public int Insert(ChatRoomDto ChatRoom)
+        { 
+            return _database.Fetch<int>(@"INSERT INTO [dbo].[ChatRoom]([CreatedAt]) OUTPUT INSERTED.ChatRoomId VALUES(@CreatedAt)", ChatRoom);
         }
     }
 }

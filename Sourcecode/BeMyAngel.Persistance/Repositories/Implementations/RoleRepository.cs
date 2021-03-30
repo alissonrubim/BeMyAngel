@@ -15,7 +15,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
         }
         public IEnumerable<RoleDto> GetAll()
         {
-            return _database.FecthAll<RoleDto>(@"SELECT [RoleId], [Name], [Identifier] FROM [dbo].[Role]");
+            return _database.FetchAll<RoleDto>(@"SELECT [RoleId], [Name], [Identifier] FROM [dbo].[Role]");
         }
 
         public RoleDto GetById(int RoleId)

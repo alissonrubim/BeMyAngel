@@ -2,7 +2,6 @@
 using BeMyAngel.Persistance.Repositories;
 using BeMyAngel.Persistance.Repositories.Implementations;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace BeMyAngel.Persistance
 {
@@ -24,6 +23,9 @@ namespace BeMyAngel.Persistance
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<IChatRoomSessionRepository, ChatRoomSessionRepository>();
+            services.AddScoped<IChatRoomEventRepository, ChatRoomEventRepository>();
         }
     }
 }

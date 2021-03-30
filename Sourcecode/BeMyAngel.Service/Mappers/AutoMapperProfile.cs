@@ -16,6 +16,12 @@ namespace BeMyAngel.Service.Mappers
 
             CreateMap<Role, RoleDto>();
             CreateMap<RoleDto, Role>();
+
+            CreateMap<Session, SessionDto>();
+            CreateMap<SessionDto, Session>();
+
+            CreateMap<ChatRoomEvent, ChatRoomEventDto>();
+            CreateMap<ChatRoomEventDto, ChatRoomEvent>();
         }
     }
 }

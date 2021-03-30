@@ -1,4 +1,6 @@
-﻿using BeMyAngel.Service.Models;
+﻿using BeMyAngel.Api.Helpers.SessionManager;
+using BeMyAngel.Api.Presentations.ChatRoomController;
+using BeMyAngel.Service.Models;
 using BeMyAngel.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,36 +14,30 @@ namespace BeMyAngel.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [CheckSession]
     public class ChatRoomController : ControllerBase
     {
-        private readonly IChatRoomService _service;
+        private readonly IChatRoomService _chatRoomService;
+        private readonly IChatRoomEventService _chatRoomEventService;
+        private readonly ISessionManager _sessionManager;
 
-        public ChatRoomController(IChatRoomService service)
+        public ChatRoomController(IChatRoomService chatRoomService, IChatRoomEventService chatRoomEventService, ISessionManager sessionManager)
         {
-            _service = service;
+            _chatRoomService = chatRoomService;
+            _chatRoomEventService = chatRoomEventService;
+            _sessionManager = sessionManager;
         }
 
         [HttpGet("Current")]
-        public ChatRoom GetCurrent()
+        public GetCurrentResponse GetCurrent()
         {
-            var identity = (ClaimsIdentity)User.Identity;
-
-            return new ChatRoom()
+            var session = _sessionManager.GetCurrentSession(HttpContext);
+            var chatRoom = _chatRoomService.GetCurrentBySession(session);
+            return new GetCurrentResponse
             {
-                ChatRoomId = 14
+                ChatRoom = chatRoom,
+                ChatRoomEvents = _chatRoomEventService.GetByChatRoomId(chatRoom.ChatRoomId)
             };
-            //_service.Get(id);
-        }
-
-        [HttpGet("{id}")]
-        public ChatRoom Get(int id)
-        {
-            return new ChatRoom()
-            {
-                ChatRoomId = id
-            };
-            //_service.Get(id);
         }
     }
 }

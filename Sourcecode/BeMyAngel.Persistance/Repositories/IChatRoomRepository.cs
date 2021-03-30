@@ -8,7 +8,8 @@ namespace BeMyAngel.Persistance.Repositories
 {
     public interface IChatRoomRepository
     {
-        ChatRoomDto Get(int userId, int chatRoomId);
-        ChatRoomDto GetCurrent(int userId);
+        ChatRoomDto GetById(int ChatRoomId);
+
+        int Insert(ChatRoomDto ChatRoom);
     }
 }

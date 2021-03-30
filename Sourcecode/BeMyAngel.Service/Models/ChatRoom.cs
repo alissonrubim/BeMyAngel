@@ -7,7 +7,7 @@ namespace BeMyAngel.Service.Models
     public class ChatRoom
     {
         public int ChatRoomId { get; set; }
-        public DateTime CreatedAtDateTime { get; set; }
-        public DateTime? TerminatedAtDateTime { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? TerminatedAt { get; set; }
     }
 }

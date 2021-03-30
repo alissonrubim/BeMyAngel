@@ -17,7 +17,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
 
         public IEnumerable<UserRoleDto> GetByUserId(int UserId)
         {
-            return _database.FecthAll<UserRoleDto>(@"SELECT [UserId], [RoleId] FROM [dbo].[UserRole] WHERE [UserId] = @UserId", new { UserId });
+            return _database.FetchAll<UserRoleDto>(@"SELECT [UserId], [RoleId] FROM [dbo].[UserRole] WHERE [UserId] = @UserId", new { UserId });
         }
     }
 }

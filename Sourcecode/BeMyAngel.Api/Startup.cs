@@ -1,3 +1,5 @@
+using BeMyAngel.Api.Helpers.SessionManager;
+using BeMyAngel.Api.Hubs;
 using BeMyAngel.Persistance;
 using BeMyAngel.Service;
 using IdentityModel;
@@ -39,6 +41,20 @@ namespace BeMyAngel.Api
         {
             services.AddControllers();
 
+            /** Add Signal IR **/
+            services.AddSignalR();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ChatCorsPermission", policy =>
+                {
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000")
+                        .AllowCredentials();
+                });
+            });
+
             /** Configure IdentityServer Authentication **/
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -58,7 +74,7 @@ namespace BeMyAngel.Api
                 /** Configure a Bearer token authentication **/
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Description = "JWT Authorization header using the Bearer scheme.",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -87,7 +103,7 @@ namespace BeMyAngel.Api
                 /** Configure a OAuth2 with Password flow authentication **/
                 c.AddSecurityDefinition("OAuth2", new OpenApiSecurityScheme
                 {
-                    Description ="JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Description ="OAuth authentication with a Bearer Authorization header.",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.OAuth2,
@@ -120,6 +136,9 @@ namespace BeMyAngel.Api
                 });
             });
 
+            /** Register Session Manager **/
+            services.AddScoped<ISessionManager, SessionManager>();
+
             _serviceStartUp.ConfigureServices(services);
         }
 
@@ -134,6 +153,8 @@ namespace BeMyAngel.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("ChatCorsPermission");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -142,6 +163,7 @@ namespace BeMyAngel.Api
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/hubs/chat");
                 endpoints.MapControllers();
             });
 

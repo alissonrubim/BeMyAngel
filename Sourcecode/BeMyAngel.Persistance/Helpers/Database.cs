@@ -25,7 +25,7 @@ namespace BeMyAngel.Persistance.Helpers
             };
         }
 
-        public List<T> FecthAll<T>(string query, object parms, CommandType commandType = CommandType.Text)
+        public List<T> FetchAll<T>(string query, object parms, CommandType commandType = CommandType.Text)
         {
             using (var context = GetDbConnection())
             {
