@@ -32,7 +32,7 @@ namespace BeMyAngel.Api.Controllers
             _chatRoomSessionService = chatRoomSessionService;
         }
 
-        [HttpGet("GetAll/{ChatRoomId}")]
+        [HttpGet("{ChatRoomId}")]
         [ProducesResponseType(typeof(IEnumerable<HubEventResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public IActionResult GetAll(int ChatRoomId)
@@ -62,6 +62,7 @@ namespace BeMyAngel.Api.Controllers
 
         [HttpPost("PostMessage")]
         [ProducesResponseType(typeof(HubEventResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public IActionResult PostMessage(PostMessageRequest request)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);

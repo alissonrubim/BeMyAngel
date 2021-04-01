@@ -13,18 +13,65 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
 
         public SessionDto GetByToken(string Token)
         {
-            return _database.Fetch<SessionDto>(@"SELECT [SessionId], [Token], [IpAddress], [UserAgent], [CreatedAt], [LastAccessAt], [UserId] FROM [dbo].[Session] WHERE [Token] = @Token", new { Token });
+            return _database.Fetch<SessionDto>(@"SELECT 
+                                                    [SessionId], 
+                                                    [Token], 
+                                                    [UserAgent], 
+                                                    [CreatedAt], 
+                                                    [LastAccessAt], 
+                                                    [UserId], 
+                                                    [LocalIpAddress], 
+                                                    [LocalPort], 
+                                                    [RemoteIpAddress],
+                                                    [RemotePort],
+                                                    [ConnectionIdentifier]
+                                                FROM [dbo].[Session] WHERE [Token] = @Token", new { Token });
         }
 
         public SessionDto GetById(int SessionId)
         {
-            return _database.Fetch<SessionDto>(@"SELECT [SessionId], [Token], [IpAddress], [UserAgent], [CreatedAt], [LastAccessAt], [UserId] FROM [dbo].[Session] WHERE [SessionId] = @SessionId", new { SessionId });
+            return _database.Fetch<SessionDto>(@"SELECT 
+                                                    [SessionId], 
+                                                    [Token], 
+                                                    [UserAgent], 
+                                                    [CreatedAt], 
+                                                    [LastAccessAt], 
+                                                    [UserId], 
+                                                    [LocalIpAddress], 
+                                                    [LocalPort], 
+                                                    [RemoteIpAddress],
+                                                    [RemotePort],
+                                                    [ConnectionIdentifier]
+                                                FROM [dbo].[Session] WHERE [SessionId] = @SessionId", new { SessionId });
         }
 
 
         public int Insert(SessionDto Session)
         {
-            return _database.Fetch<int>(@"INSERT INTO [dbo].[Session]([Token], [IpAddress], [UserAgent], [CreatedAt]) OUTPUT INSERTED.SessionId VALUES(@Token, @IpAddress, @UserAgent, @CreatedAt)", Session);
+            return _database.Fetch<int>(@"INSERT INTO [dbo].[Session](
+                                                    [Token], 
+                                                    [UserAgent], 
+                                                    [CreatedAt], 
+                                                    [LastAccessAt], 
+                                                    [UserId], 
+                                                    [LocalIpAddress], 
+                                                    [LocalPort], 
+                                                    [RemoteIpAddress],
+                                                    [RemotePort],
+                                                    [ConnectionIdentifier]
+                                         ) 
+                                        OUTPUT INSERTED.SessionId VALUES(
+                                                    @Token, 
+                                                    @UserAgent, 
+                                                    @CreatedAt,
+                                                    @LastAccessAt,
+                                                    @UserId,
+                                                    @LocalIpAddress,
+                                                    @LocalPort,
+                                                    @RemoteIpAddress,
+                                                    @RemotePort,
+                                                    @ConnectionIdentifier
+                                         )", Session);
         }
 
         public void Update(SessionDto Session)

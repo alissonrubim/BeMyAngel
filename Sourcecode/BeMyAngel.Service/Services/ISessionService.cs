@@ -11,6 +11,7 @@ namespace BeMyAngel.Service.Services
         Session GetById(int SessionId);
         int Create(Session session);
         void Renew(Session session);
-        void AttachToUser(Session session, User user);
+        void AttachUser(Session session, User user);
+        void DeattachUser(Session session);
     }
 }

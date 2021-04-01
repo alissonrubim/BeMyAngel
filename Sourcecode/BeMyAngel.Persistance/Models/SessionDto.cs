@@ -13,5 +13,10 @@ namespace BeMyAngel.Persistance.Models
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset LastAccessAt { get; set; }
         public int? UserId { get; set; }
+        public string LocalIpAddress { get; set; }
+        public string LocalPort { get; set; }
+        public string RemoteIpAddress { get; set; }
+        public string RemotePort { get; set; }
+        public string ConnectionIdentifier { get; set; }
     }
 }

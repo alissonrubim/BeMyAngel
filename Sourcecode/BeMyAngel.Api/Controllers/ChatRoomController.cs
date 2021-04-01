@@ -1,6 +1,7 @@
 ﻿using BeMyAngel.Api.Helpers.SessionManager;
 using BeMyAngel.Api.Presentations.ChatRoomController;
 using BeMyAngel.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,22 @@ namespace BeMyAngel.Api.Controllers
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
             var chatRoom = _chatRoomService.GetCurrentBySession(session);
+            return Ok(new GetCurrentResponse
+            {
+                ChatRoom = chatRoom,
+                MyChatRoomSessionToken = _chatRoomSessionService.Get(chatRoom.ChatRoomId, session.SessionId).Token
+            });
+        }
+
+        [Authorize]
+        [HttpGet("{ChatRoomId}")]
+        [ProducesResponseType(typeof(GetCurrentResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        public IActionResult GetById(int ChatRoomId)
+        {
+            var session = _sessionManager.GetCurrentSession(HttpContext);
+            var chatRoom = _chatRoomService.GetById(ChatRoomId, session);
             return Ok(new GetCurrentResponse
             {
                 ChatRoom = chatRoom,

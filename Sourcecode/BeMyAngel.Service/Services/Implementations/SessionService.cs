@@ -18,11 +18,20 @@ namespace BeMyAngel.Service.Services.Implementations
             _mapper = mapper;
         }
 
-        public void AttachToUser(Session session, User user)
+        public void AttachUser(Session session, User user)
         {
             if (!GetById(session.SessionId).UserId.HasValue)
             {
                 session.UserId = user.UserId;
+                _repository.Update(_mapper.Map<SessionDto>(session));
+            }
+        }
+
+        public void DeattachUser(Session session)
+        {
+            if (GetById(session.SessionId).UserId.HasValue)
+            {
+                session.UserId = null;
                 _repository.Update(_mapper.Map<SessionDto>(session));
             }
         }
@@ -35,6 +44,8 @@ namespace BeMyAngel.Service.Services.Implementations
             }
             while (GetByToken(session.Token) != null);
 
+            session.CreatedAt = DateTime.Now;
+            session.LastAccessAt = DateTime.Now;
             return _repository.Insert(_mapper.Map<SessionDto>(session));
         }
 

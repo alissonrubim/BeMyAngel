@@ -46,7 +46,7 @@ namespace BeMyAngel.Api.Helpers.SessionManager
             {
                 //If exists, check if the token is valid
                 var session = _sessionService.GetByToken(cookie);
-                if (IsValid(session, filterContext.HttpContext))
+                if (session != null && IsValid(session, filterContext.HttpContext))
                 {
                     _sessionService.Renew(session);
 
@@ -56,16 +56,16 @@ namespace BeMyAngel.Api.Helpers.SessionManager
                     {
                         if (!session.UserId.HasValue)
                         {
-                            _sessionService.AttachToUser(session, _userService.GetById(userId.Value));
+                            _sessionService.AttachUser(session, _userService.GetById(userId.Value));
                         }
                         else if(session.UserId.HasValue && session.UserId.Value != userId.Value)
                         {
-                            //Something went wrong: a logged user using another user session
+                            //Something went wrong: a logged user using another user session that is not his session
                         }
                     }
-                    else if(session.UserId.HasValue) //If the user is not logged
+                    else if(session.UserId.HasValue) //If the user is not logged, we remove the user from the session
                     {
-                        //Do nothing for now
+                        _sessionService.DeattachUser(session);
                     }
                 }
                 else
@@ -80,7 +80,11 @@ namespace BeMyAngel.Api.Helpers.SessionManager
         {
             var sessionId = _sessionService.Create(new Session
             {
-                IpAddress = httpContext.Connection.RemoteIpAddress.ToString(),
+                LocalIpAddress = httpContext.Connection.LocalIpAddress.ToString(),
+                LocalPort = httpContext.Connection.LocalPort,
+                RemoteIpAddress = httpContext.Connection.RemoteIpAddress.ToString(),
+                RemotePort = httpContext.Connection.RemotePort,
+                ConnectionIdentifier = httpContext.Connection.Id,
                 UserAgent = httpContext.Request.Headers["User-Agent"]
             });
             var session = _sessionService.GetById(sessionId);
@@ -95,7 +99,8 @@ namespace BeMyAngel.Api.Helpers.SessionManager
         
         private bool IsValid(Session session, HttpContext httpContext)
         {
-            return session.IpAddress == httpContext.Connection.RemoteIpAddress.ToString() &&
+            return session.LocalIpAddress == httpContext.Connection.LocalIpAddress.ToString() &&
+                   session.RemoteIpAddress == httpContext.Connection.RemoteIpAddress.ToString() &&
                    session.UserAgent == httpContext.Request.Headers["User-Agent"];
         }
     }

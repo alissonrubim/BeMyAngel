@@ -31,6 +31,7 @@ namespace BeMyAngel.Service.Services.Implementations
             var chatRoom = _chatRoomService.GetById(ChatRoomId, Session);
             var chatRoomEvent = new ChatRoomEventDto()
             {
+                CreatedAt = DateTime.Now,
                 ChatRoomId = chatRoom.ChatRoomId,
                 ChatRoomEventTypeId = ChatRoomEventTypes.PostMessage.ChatRoomEventTypeId,
                 SessionId = Session.SessionId,
