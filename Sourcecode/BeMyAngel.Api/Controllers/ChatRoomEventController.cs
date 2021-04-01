@@ -41,9 +41,10 @@ namespace BeMyAngel.Api.Controllers
             try
             {
                 var session = _sessionManager.GetCurrentSession(HttpContext);
-                var chatRoomSession = _chatRoomSessionService.Get(ChatRoomId, session.SessionId);
                 var chatRoomEvents = _chatRoomEventService.GetAllByChatRoomId(ChatRoomId, session.SessionId);
                 foreach (var chatRoomEvent in chatRoomEvents)
+                {
+                    var chatRoomSession = _chatRoomSessionService.Get(chatRoomEvent.ChatRoomSessionId);
                     result.Add(new HubEventResponse
                     {
                         ChatRoomEventId = chatRoomEvent.ChatRoomEventId,
@@ -52,6 +53,7 @@ namespace BeMyAngel.Api.Controllers
                         CreatedAt = chatRoomEvent.CreatedAt,
                         Data = chatRoomEvent.Data
                     });
+                }
             }
             catch (ForbidException e)
             {

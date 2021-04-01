@@ -43,14 +43,20 @@ namespace BeMyAngel.Api.Controllers
         [ProducesResponseType(typeof(GetCurrentResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public IActionResult GetById(int ChatRoomId)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
             var chatRoom = _chatRoomService.GetById(ChatRoomId, session);
+            if (chatRoom == null)
+                return NotFound();
+            var chatRoomSession = _chatRoomSessionService.Get(chatRoom.ChatRoomId, session.SessionId);
+            if (chatRoomSession == null)
+                return Forbid();
             return Ok(new GetCurrentResponse
             {
                 ChatRoom = chatRoom,
-                MyChatRoomSessionToken = _chatRoomSessionService.Get(chatRoom.ChatRoomId, session.SessionId).Token
+                MyChatRoomSessionToken = chatRoomSession.Token
             });
         }
     }

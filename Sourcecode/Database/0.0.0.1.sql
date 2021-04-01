@@ -10,10 +10,12 @@ ALTER TABLE [dbo].[ChatRoom] DROP COLUMN [TerminatedAtDateTime]
 ALTER TABLE [dbo].[ChatRoom] ADD [CreatedAt] DATETIMEOFFSET NOT NULL DEFAULT GETDATE();
 ALTER TABLE [dbo].[ChatRoom] ADD [TerminatedAt] DATETIMEOFFSET NULL;
 
-create table [dbo].[ChatRoomSession](
+CREATE TABLE [dbo].[ChatRoomSession](
+   [ChatRoomSessionId] INT NOT NULL IDENTITY,
    [ChatRoomId] INT NOT NULL,
    [SessionId] INT NOT NULL
 );
+ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_PK] PRIMARY KEY ([ChatRoomSessionId]);
 ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_FK_ChatRoom] FOREIGN KEY ([ChatRoomId]) REFERENCES [dbo].[ChatRoom]([ChatRoomId]); 
 ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_FK_Session] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Session]([SessionId]); 
 ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_UK_ChatRoomId_SessionId] UNIQUE ([ChatRoomId], [SessionId]);
@@ -35,12 +37,12 @@ CREATE TABLE [dbo].[ChatRoomEvent](
    [ChatRoomEventId] INT NOT NULL IDENTITY,
    [ChatRoomId] INT NOT NULL,
    [ChatRoomEventTypeId] INT NOT NULL,
-   [SessionId] INT NOT NULL,
+   [ChatRoomSessionId] INT NOT NULL,
    [CreatedAt] DATETIMEOFFSET NOT NULL,
    [Data] VARCHAR(MAX) NULL
 );
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_PK] PRIMARY KEY ([ChatRoomEventId]);
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoom] FOREIGN KEY ([ChatRoomId]) REFERENCES [dbo].[ChatRoom]([ChatRoomId]); 
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoomEventType] FOREIGN KEY ([ChatRoomEventTypeId]) REFERENCES [dbo].[ChatRoomEventType]([ChatRoomEventTypeId]); 
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_Session] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Session]([SessionId]); 
+ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoomSession] FOREIGN KEY ([ChatRoomSessionId]) REFERENCES [dbo].[ChatRoomSession]([ChatRoomSessionId]); 
 ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_CK_Data] CHECK (ISJSON([Data])=1);

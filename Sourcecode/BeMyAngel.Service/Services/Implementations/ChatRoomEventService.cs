@@ -29,12 +29,13 @@ namespace BeMyAngel.Service.Services.Implementations
         public int CreatePostMessageEvent(int ChatRoomId, string Message, Session Session)
         {
             var chatRoom = _chatRoomService.GetById(ChatRoomId, Session);
+            var chatRoomSession = _chatRoomSessionService.Get(ChatRoomId, Session.SessionId);
             var chatRoomEvent = new ChatRoomEventDto()
             {
                 CreatedAt = DateTime.Now,
                 ChatRoomId = chatRoom.ChatRoomId,
                 ChatRoomEventTypeId = ChatRoomEventTypes.PostMessage.ChatRoomEventTypeId,
-                SessionId = Session.SessionId,
+                ChatRoomSessionId = chatRoomSession.ChatRoomSessionId,
                 Data = JsonConvert.SerializeObject(new
                 {
                     Message = Message

@@ -34,7 +34,7 @@ namespace BeMyAngel.Api
 
             services.AddCors(options =>
             {
-                options.AddPolicy("ChatCorsPermission", policy =>
+                options.AddPolicy("CorsPermission", policy =>
                 {
                     policy.AllowAnyHeader()
                         .AllowAnyMethod()
@@ -141,7 +141,7 @@ namespace BeMyAngel.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("ChatCorsPermission");
+            app.UseCors("CorsPermission");
 
             app.UseHttpsRedirection();
 

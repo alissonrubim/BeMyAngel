@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BeMyAngel.Persistance.Repositories;
 using BeMyAngel.Service.Models;
+using System;
 
 namespace BeMyAngel.Service.Services.Implementations
 {
@@ -17,12 +18,22 @@ namespace BeMyAngel.Service.Services.Implementations
 
         public void AddSessionToChatRoom(int ChatRoomId, int SessionId)
         {
-            _repository.AddSessionToChatRoom(ChatRoomId, SessionId);
+            var token = string.Empty;
+            do
+            {
+                token = Guid.NewGuid().ToString().ToUpper();
+            } while (GetByToken(token) != null);
+            _repository.Insert(ChatRoomId, SessionId, token);
         }
 
         public ChatRoomSession Get(int ChatRoomId, int SessionId)
         {
             return _mapper.Map<ChatRoomSession>(_repository.Get(ChatRoomId, SessionId));
+        }
+
+        public ChatRoomSession Get(int ChatRoomSessionId)
+        {
+            return _mapper.Map<ChatRoomSession>(_repository.Get(ChatRoomSessionId));
         }
 
         public ChatRoomSession GetBySessionId(int SessionId, bool IncludeClosedChatRooms = false)

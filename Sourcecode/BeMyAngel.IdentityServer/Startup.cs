@@ -26,6 +26,24 @@ namespace BeMyAngel.IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var clients = Clients.GetClients();
+
+            /** Get all the cors configuration from the Clients and use it to enable Cors on the service **/
+            var corsOrigins = new List<string>();
+            foreach (var client in clients)
+                corsOrigins.AddRange(client.AllowedCorsOrigins);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPermission", policy =>
+                {
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins(corsOrigins.ToArray())
+                        .AllowCredentials();
+                });
+            });
+
             services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -33,7 +51,7 @@ namespace BeMyAngel.IdentityServer
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-                .AddInMemoryClients(Clients.GetClients())
+                .AddInMemoryClients(clients)
                 .AddInMemoryIdentityResources(IdentityResources.GetIdentityResources())
                 .AddInMemoryApiResources(ApiResources.GetResources())
                 .AddInMemoryApiScopes(ApiScopes.GetScopes())
@@ -68,6 +86,8 @@ namespace BeMyAngel.IdentityServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("CorsPermission");
 
             app.UseStaticFiles();
             app.UseRouting();

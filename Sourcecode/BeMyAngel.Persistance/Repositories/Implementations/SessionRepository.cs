@@ -60,7 +60,8 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                     [RemotePort],
                                                     [ConnectionIdentifier]
                                          ) 
-                                        OUTPUT INSERTED.SessionId VALUES(
+                                        OUTPUT INSERTED.SessionId 
+                                        VALUES(
                                                     @Token, 
                                                     @UserAgent, 
                                                     @CreatedAt,

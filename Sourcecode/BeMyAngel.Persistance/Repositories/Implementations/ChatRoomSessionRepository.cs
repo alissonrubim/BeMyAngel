@@ -1,4 +1,4 @@
-﻿using BeMyAngel.Persistance.Helpers;
+﻿        using BeMyAngel.Persistance.Helpers;
 using BeMyAngel.Persistance.Models;
 using System;
 
@@ -14,12 +14,32 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
 
         public ChatRoomSessionDto GetByToken(string Token)
         {
-            return _database.Fetch<ChatRoomSessionDto>(@"SELECT [ChatRoomId], [SessionId], [Token] FROM [dbo].[ChatRoomSession] WHERE [Token] = @Token", new { Token });
+            return _database.Fetch<ChatRoomSessionDto>(@"SELECT 
+                                                            [ChatRoomSessionId],
+                                                            [ChatRoomId], 
+                                                            [SessionId], 
+                                                            [Token] 
+                                                        FROM [dbo].[ChatRoomSession] WHERE [Token] = @Token", new { Token });
+        }
+
+        public ChatRoomSessionDto Get(int ChatRoomSessionId)
+        {
+            return _database.Fetch<ChatRoomSessionDto>(@"SELECT 
+                                                            [ChatRoomSessionId],
+                                                            [ChatRoomId], 
+                                                            [SessionId], 
+                                                            [Token] 
+                                                         FROM [dbo].[ChatRoomSession] WHERE [ChatRoomSessionId] = @ChatRoomSessionId", new { ChatRoomSessionId });
         }
 
         public ChatRoomSessionDto Get(int ChatRoomId, int SessionId)
         {
-            return _database.Fetch<ChatRoomSessionDto>(@"SELECT [ChatRoomId], [SessionId], [Token] FROM [dbo].[ChatRoomSession] WHERE [ChatRoomId] = @ChatRoomId AND [SessionId] = @SessionId", new { ChatRoomId, SessionId });
+            return _database.Fetch<ChatRoomSessionDto>(@"SELECT 
+                                                            [ChatRoomSessionId],
+                                                            [ChatRoomId], 
+                                                            [SessionId], 
+                                                            [Token] 
+                                                         FROM [dbo].[ChatRoomSession] WHERE [ChatRoomId] = @ChatRoomId AND [SessionId] = @SessionId", new { ChatRoomId, SessionId });
         }
 
         public ChatRoomSessionDto GetBySessionId(int SessionId, bool IncludeClosedChatRooms = false)
@@ -28,6 +48,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                 throw new NotImplementedException("The IncludeClosedChatRooms its not implemented yet!");
 
             return _database.Fetch<ChatRoomSessionDto>(@"SELECT 
+                                                                crs.[ChatRoomSessionId], 
 	                                                            crs.[ChatRoomId], 
 	                                                            crs.[SessionId],
                                                                 crs.[Token]
@@ -39,17 +60,11 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                             cr.[TerminatedAt] is null", new { SessionId });
         }
 
-        public void AddSessionToChatRoom(int ChatRoomId, int SessionId)
+        public int Insert(int ChatRoomId, int SessionId, string Token)
         {
-            var token = string.Empty;
-            do
-            {
-                token = Guid.NewGuid().ToString().ToUpper();
-            } while (GetByToken(token) != null);
-
-            _database.Execute(@"INSERT INTO [dbo].[ChatRoomSession]([ChatRoomId], [SessionId], [Token]) VALUES(@ChatRoomId, @SessionId, @token)", new { SessionId, ChatRoomId, token });
+            return _database.Fetch<int>(@"INSERT INTO [dbo].[ChatRoomSession]([ChatRoomId], [SessionId], [Token]) 
+                                          OUTPUT INSERTED.ChatRoomSessionId 
+                                          VALUES(@ChatRoomId, @SessionId, @token)", new { SessionId, ChatRoomId, Token });
         }
-
-        
     }
 }

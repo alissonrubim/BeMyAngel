@@ -6,6 +6,7 @@ namespace BeMyAngel.Service.Models
 {
     public class ChatRoomSession
     { 
+        public int ChatRoomSessionId { get; set; }
         public int ChatRoomId { get; set; }
         public int SessionId { get; set; }
         public string Token { get; set; }
