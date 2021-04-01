@@ -29,6 +29,7 @@ namespace BeMyAngel.Service
             services.AddScoped<IUserRoleService, UserRoleService>();
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IChatRoomEventService, ChatRoomEventService>();
+            services.AddScoped<IChatRoomSessionService, ChatRoomSessionService>();
         }
     }
 }

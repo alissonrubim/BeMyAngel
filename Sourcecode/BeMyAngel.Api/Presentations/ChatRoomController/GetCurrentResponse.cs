@@ -6,6 +6,6 @@ namespace BeMyAngel.Api.Presentations.ChatRoomController
     public class GetCurrentResponse
     {
         public ChatRoom ChatRoom { get; set; }
-        public IEnumerable<ChatRoomEvent> ChatRoomEvents { get; set; }
+        public string MyChatRoomSessionToken { get; set; }
     }
 }

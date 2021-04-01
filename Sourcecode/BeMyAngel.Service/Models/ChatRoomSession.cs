@@ -1,13 +1,12 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Text;
 
-namespace BeMyAngel.Persistance.Models
+namespace BeMyAngel.Service.Models
 {
-    public class ChatRoomSessionDto
-    {
-        [Key]
+    public class ChatRoomSession
+    { 
         public int ChatRoomId { get; set; }
-        [Key]
         public int SessionId { get; set; }
         public string Token { get; set; }
     }

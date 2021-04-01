@@ -10,15 +10,15 @@ namespace BeMyAngel.Service.Services.Implementations
     internal class UserRoleService : IUserRoleService
     {
         private readonly IUserRoleRepository _repository;
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
         private readonly IMapper _mapper;
 
-        public UserRoleService(IUserRoleRepository repository, IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper)
+        public UserRoleService(IUserRoleRepository repository, IUserService userService, IRoleService roleService, IMapper mapper)
         {
             _repository = repository;
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _userService = userService;
+            _roleService = roleService;
             _mapper = mapper;
         }
 
@@ -27,7 +27,7 @@ namespace BeMyAngel.Service.Services.Implementations
             var roles = new List<Role>();
             var userRoles = _repository.GetByUserId(UserId);
             foreach (var userRole in userRoles)
-                roles.Add(_mapper.Map<Role>(_roleRepository.GetById(userRole.RoleId)));
+                roles.Add(_mapper.Map<Role>(_roleService.GetById(userRole.RoleId)));
             return roles;
         }
 

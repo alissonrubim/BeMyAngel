@@ -22,6 +22,9 @@ namespace BeMyAngel.Service.Mappers
 
             CreateMap<ChatRoomEvent, ChatRoomEventDto>();
             CreateMap<ChatRoomEventDto, ChatRoomEvent>();
+
+            CreateMap<ChatRoomSession, ChatRoomSessionDto>();
+            CreateMap<ChatRoomSessionDto, ChatRoomSession>();
         }
     }
 }

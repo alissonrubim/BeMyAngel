@@ -8,5 +8,6 @@ namespace BeMyAngel.Service.Services
     public interface IChatRoomService
     {
         ChatRoom GetCurrentBySession(Session session);
+        ChatRoom GetById(int chatRoomId, Session session);
     }
 }
