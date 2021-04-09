@@ -2,6 +2,7 @@
 using BeMyAngel.Service.Services;
 using BeMyAngel.Service.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace BeMyAngel.Service
 {
@@ -30,6 +31,11 @@ namespace BeMyAngel.Service
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IChatRoomEventService, ChatRoomEventService>();
             services.AddScoped<IChatRoomSessionService, ChatRoomSessionService>();
+        }
+
+        public void Configure(IServiceProvider serviceProvider)
+        {
+            _persistanceStartup.Configure(serviceProvider);
         }
     }
 }

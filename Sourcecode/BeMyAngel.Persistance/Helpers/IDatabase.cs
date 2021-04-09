@@ -13,5 +13,6 @@ namespace BeMyAngel.Persistance.Helpers
         T Fetch<T>(string query, object parms = null, CommandType commandType = CommandType.Text);
         List<T> FetchAll<T>(string query, object parms = null, CommandType commandType = CommandType.Text);
         void Execute(string command, object parms = null, CommandType commandType = CommandType.Text);
+        void Configure(DatabaseConfiguration configuration);
     }
 }

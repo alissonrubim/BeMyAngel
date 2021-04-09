@@ -1,48 +1,69 @@
-ALTER TABLE [dbo].[Session] ADD [CreatedAt] DATETIMEOFFSET NOT NULL DEFAULT GETDATE();
-ALTER TABLE [dbo].[Session] ADD [LastAccessAt] DATETIMEOFFSET NOT NULL DEFAULT GETDATE();
-
-ALTER TABLE [dbo].[Session] ADD [UserId] INTEGER NULL;
-ALTER TABLE [dbo].[Session] ADD CONSTRAINT [Session_FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId])
-
-ALTER TABLE [dbo].[ChatRoom] DROP COLUMN [CreatedAtDateTime]
-ALTER TABLE [dbo].[ChatRoom] DROP COLUMN [TerminatedAtDateTime]
-
-ALTER TABLE [dbo].[ChatRoom] ADD [CreatedAt] DATETIMEOFFSET NOT NULL DEFAULT GETDATE();
-ALTER TABLE [dbo].[ChatRoom] ADD [TerminatedAt] DATETIMEOFFSET NULL;
-
-CREATE TABLE [dbo].[ChatRoomSession](
-   [ChatRoomSessionId] INT NOT NULL IDENTITY,
-   [ChatRoomId] INT NOT NULL,
-   [SessionId] INT NOT NULL
+CREATE TABLE [dbo].[Session](
+  [SessionId] INT NOT NULL IDENTITY,
+  [Token] VARCHAR(64) NOT NULL,
+  [IpAddress] VARCHAR(16) NOT NULL,
+  [UserAgent] VARCHAR(128) NULL
 );
-ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_PK] PRIMARY KEY ([ChatRoomSessionId]);
-ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_FK_ChatRoom] FOREIGN KEY ([ChatRoomId]) REFERENCES [dbo].[ChatRoom]([ChatRoomId]); 
-ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_FK_Session] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Session]([SessionId]); 
-ALTER TABLE [dbo].[ChatRoomSession] ADD CONSTRAINT [ChatRoomSession_UK_ChatRoomId_SessionId] UNIQUE ([ChatRoomId], [SessionId]);
+ALTER TABLE [dbo].[Session] ADD CONSTRAINT [Session_PK] PRIMARY KEY ([SessionId]);
+ALTER TABLE [dbo].[Session] ADD CONSTRAINT [Session_UK_Token] UNIQUE ([Token]);
 
-CREATE TABLE [dbo].[ChatRoomEventType](
-   [ChatRoomEventTypeId] INT NOT NULL IDENTITY,
-   [Identifier] VARCHAR(32) NOT NULL,
-   [Description] VARCHAR(128) NOT NULL
+
+CREATE TABLE [dbo].[Role](
+   [RoleId] INT NOT NULL IDENTITY,
+   [Name] VARCHAR(64) NOT NULL,
+   [Identifier] VARCHAR(32) NOT NULL
 );
-ALTER TABLE [dbo].[ChatRoomEventType] ADD CONSTRAINT [ChatRoomEventType_PK] PRIMARY KEY ([ChatRoomEventTypeId]);
-ALTER TABLE [dbo].[ChatRoomEventType] ADD CONSTRAINT [ChatRoomEventType_UK_Identifier] UNIQUE ([Identifier]);
+ALTER TABLE [dbo].[Role] ADD CONSTRAINT [Role_PK] PRIMARY KEY ([RoleId]);
+ALTER TABLE [dbo].[Role] ADD CONSTRAINT [Role_UK_Identifier] UNIQUE ([Identifier]);
+INSERT INTO [dbo].[Role]([Name], [Identifier])
+VALUES ('Patient', 'PATIENT'), ('Psychiatrist', 'PSYCHIATRIST'), ('System', 'SYSTEM');
 
-INSERT INTO [dbo].[ChatRoomEventType]([Description], [Identifier])
-VALUES ('Chat was created', 'CreateChat'), 
-       ('Message was sent', 'PostMessage'), 
-       ('Chat was terminated', 'TerminateChat');
 
-CREATE TABLE [dbo].[ChatRoomEvent](
-   [ChatRoomEventId] INT NOT NULL IDENTITY,
-   [ChatRoomId] INT NOT NULL,
-   [ChatRoomEventTypeId] INT NOT NULL,
-   [ChatRoomSessionId] INT NOT NULL,
-   [CreatedAt] DATETIMEOFFSET NOT NULL,
-   [Data] VARCHAR(MAX) NULL
+CREATE TABLE [dbo].[User](
+   [UserId] INT NOT NULL IDENTITY,
+   [UserName] VARCHAR(64) NOT NULL,
+   [Password] VARCHAR(256) NULL,
+   [EncryptKey] VARCHAR(246) NOT NULL,
+   [IsEnabled] BIT NOT NULL DEFAULT 1
 );
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_PK] PRIMARY KEY ([ChatRoomEventId]);
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoom] FOREIGN KEY ([ChatRoomId]) REFERENCES [dbo].[ChatRoom]([ChatRoomId]); 
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoomEventType] FOREIGN KEY ([ChatRoomEventTypeId]) REFERENCES [dbo].[ChatRoomEventType]([ChatRoomEventTypeId]); 
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_FK_ChatRoomSession] FOREIGN KEY ([ChatRoomSessionId]) REFERENCES [dbo].[ChatRoomSession]([ChatRoomSessionId]); 
-ALTER TABLE [dbo].[ChatRoomEvent] ADD CONSTRAINT [ChatRoomEvent_CK_Data] CHECK (ISJSON([Data])=1);
+ALTER TABLE [dbo].[User] ADD CONSTRAINT [User_PK] PRIMARY KEY ([UserId]);
+ALTER TABLE [dbo].[User] ADD CONSTRAINT [User_UK_UserName] UNIQUE ([UserName]);
+
+INSERT INTO [dbo].[User]([UserName], [EncryptKey]) VALUES('system', NEWID());
+
+CREATE TABLE [dbo].[UserSession](
+  [UserId] INT NOT NULL,
+  [SessionId] INT NOT NULL
+);
+ALTER TABLE [dbo].[UserSession] ADD CONSTRAINT [UserSession_FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId]); 
+ALTER TABLE [dbo].[UserSession] ADD CONSTRAINT [UserSession_FK_Session] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Session]([SessionId]); 
+
+
+CREATE TABLE [dbo].[Person](
+   [PersonId] INT NOT NULL IDENTITY,
+   [UserId] INT NULL,
+   [Name] VARCHAR(64) NOT NULL
+);
+ALTER TABLE [dbo].[Person] ADD CONSTRAINT [Person_PK] PRIMARY KEY ([PersonId]);
+ALTER TABLE [dbo].[Person] ADD CONSTRAINT [Person_FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId]); 
+ALTER TABLE [dbo].[Person] ADD CONSTRAINT [Person_UK_UserId] UNIQUE ([UserId]);
+
+
+CREATE TABLE [dbo].[UserRole](
+   [UserId] INT NOT NULL,
+   [RoleId] INT NOT NULL
+);
+ALTER TABLE [dbo].[UserRole] ADD CONSTRAINT [UserRole_FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId]); 
+ALTER TABLE [dbo].[UserRole] ADD CONSTRAINT [UserRole_FK_Role] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Role]([RoleId]); 
+ALTER TABLE [dbo].[UserRole] ADD CONSTRAINT [UserRole_UK_UserId_RoleId] UNIQUE ([UserId], [RoleId]);
+
+INSERT INTO [dbo].[UserRole]([UserId], [RoleId]) 
+VALUES((SELECT [UserId] FROM [dbo].[User] WHERE [Username] = 'system'), (SELECT [RoleId] FROM [dbo].[Role] WHERE [Identifier] = 'SYSTEM'));
+
+
+CREATE TABLE [dbo].[ChatRoom](
+   [ChatRoomId] INT NOT NULL IDENTITY,
+   [CreatedAtDateTime] DATETIME NOT NULL,
+   [TerminatedAtDateTime] DATETIME NULL
+);
+ALTER TABLE [dbo].[ChatRoom] ADD CONSTRAINT [ChatRoom_PK] PRIMARY KEY ([ChatRoomId]);

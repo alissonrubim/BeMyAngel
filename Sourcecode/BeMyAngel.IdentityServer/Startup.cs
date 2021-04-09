@@ -94,6 +94,8 @@ namespace BeMyAngel.IdentityServer
             app.UseIdentityServer();
 
             app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
+
+            _serviceStartUp.Configure(app.ApplicationServices);
         }
     }
 }

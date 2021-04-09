@@ -91,6 +91,7 @@ namespace BeMyAngel.Api.Helpers.SessionManager
             httpContext.Response.Cookies.Append(SessionToeknCookieName, session.Token, new CookieOptions
             {
                 HttpOnly = false,
+                MaxAge = new TimeSpan(30, 0, 0, 0),
                 Path = "/" ,
                 SameSite = SameSiteMode.None,
                 Secure = true

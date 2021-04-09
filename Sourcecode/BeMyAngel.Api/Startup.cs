@@ -163,6 +163,8 @@ namespace BeMyAngel.Api
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Version 1.0");
                 });
             }
+
+            _serviceStartUp.Configure(app.ApplicationServices);
         }
 
         private DiscoveryDocumentResponse GetIdentityServerDiscoveryDocument()
