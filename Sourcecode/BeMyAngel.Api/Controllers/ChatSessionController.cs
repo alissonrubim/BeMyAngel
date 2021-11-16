@@ -12,13 +12,13 @@ namespace BeMyAngel.Api.Controllers
     [CheckSession]
     public class ChatSessionController : ControllerBase
     {
-        private readonly IChatSessionService _ChatSessionService;
+        private readonly IChatSessionService _chatSessionService;
         private readonly ISessionManager _sessionManager;
 
-        public ChatSessionController(IChatSessionService ChatSessionService,
+        public ChatSessionController(IChatSessionService chatSessionService,
                                   ISessionManager sessionManager)
         {
-            _ChatSessionService = ChatSessionService;
+            _chatSessionService = chatSessionService;
             _sessionManager = sessionManager;
         }
 
@@ -29,7 +29,7 @@ namespace BeMyAngel.Api.Controllers
         public void AssignToChat(AssignToChatRequest request)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
-            _ChatSessionService.AddSessionToChat(request.ChatId, session.SessionId);
+            _chatSessionService.AddSessionToChat(request.ChatId, session.SessionId);
         }
     }
 }

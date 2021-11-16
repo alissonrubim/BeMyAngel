@@ -9,5 +9,6 @@ namespace BeMyAngel.Persistance.Repositories
         ChatSessionDto GetByToken(string Token);
         ChatSessionDto GetBySessionId(int SessionId, bool IncludeClosedChats = false);
         int Insert(int ChatId, int SessionId, string Token);
+        void DefineConnectionId(int ChatSessionId, string ConnectionId);
     }
 }

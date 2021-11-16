@@ -18,7 +18,8 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                             [ChatSessionId],
                                                             [ChatId], 
                                                             [SessionId], 
-                                                            [Token] 
+                                                            [Token],
+                                                            [ConnectionId]
                                                         FROM [dbo].[ChatSession] WHERE [Token] = @Token", new { Token });
         }
 
@@ -28,7 +29,8 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                             [ChatSessionId],
                                                             [ChatId], 
                                                             [SessionId], 
-                                                            [Token] 
+                                                            [Token],
+                                                            [ConnectionId]
                                                          FROM [dbo].[ChatSession] WHERE [ChatSessionId] = @ChatSessionId", new { ChatSessionId });
         }
 
@@ -38,7 +40,8 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                             [ChatSessionId],
                                                             [ChatId], 
                                                             [SessionId], 
-                                                            [Token] 
+                                                            [Token],
+                                                            [ConnectionId]
                                                          FROM [dbo].[ChatSession] WHERE [ChatId] = @ChatId AND [SessionId] = @SessionId", new { ChatId, SessionId });
         }
 
@@ -51,7 +54,8 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                                 crs.[ChatSessionId], 
 	                                                            crs.[ChatId], 
 	                                                            crs.[SessionId],
-                                                                crs.[Token]
+                                                                crs.[Token],
+                                                                crs.[ConnectionId]
                                                          FROM [dbo].[ChatSession] crs
                                                          INNER JOIN [dbo].[Chat] cr
 	                                                         ON cr.[ChatId] = crs.[ChatId]
@@ -62,9 +66,18 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
 
         public int Insert(int ChatId, int SessionId, string Token)
         {
-            return _database.Fetch<int>(@"INSERT INTO [dbo].[ChatSession]([ChatId], [SessionId], [Token]) 
+            return _database.Fetch<int>(@"INSERT INTO [dbo].[ChatSession]([ChatId], [SessionId], [Token], [ConnectionId]) 
                                           OUTPUT INSERTED.ChatSessionId 
-                                          VALUES(@ChatId, @SessionId, @token)", new { SessionId, ChatId, Token });
+                                          VALUES(@ChatId, @SessionId, @token, null)", new { SessionId, ChatId, Token });
+        }
+
+        public void DefineConnectionId(int ChatSessionId, string ConnectionId)
+        {
+            _database.Execute(@"UPDATE [dbo].[ChatSession] SET [ConnectionId] = @ConnectionId WHERE [ChatSessionId] = @ChatSessionId", new
+            {
+                ChatSessionId,
+                ConnectionId
+            });
         }
     }
 }

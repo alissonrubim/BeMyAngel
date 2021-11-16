@@ -45,5 +45,10 @@ namespace BeMyAngel.Service.Services.Implementations
         {
             return _mapper.Map<ChatSession>(_repository.GetByToken(Token));
         }
+
+        public void DefineConnectionId(int ChatSessionId, string ConnectionId)
+        {
+            _repository.DefineConnectionId(ChatSessionId, ConnectionId);
+        }
     }
 }

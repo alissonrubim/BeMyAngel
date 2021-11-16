@@ -9,5 +9,6 @@ namespace BeMyAngel.Service.Services
     {
         Chat GetCurrentBySession(Session session);
         Chat GetById(int ChatId, Session session);
+        Chat Create(Session session);
     }
 }

@@ -12,13 +12,13 @@ namespace BeMyAngel.Service.Services.Implementations
     internal class ChatService: IChatService
     {
         private readonly IChatRepository _repository;
-        private readonly IChatSessionService _ChatSessionService;
+        private readonly IChatSessionService _chatSessionService;
         private readonly IMapper _mapper;
 
-        public ChatService(IChatRepository repository, IChatSessionService ChatSessionService, IMapper mapper)
+        public ChatService(IChatRepository repository, IChatSessionService chatSessionService, IMapper mapper)
         {
             _repository = repository;
-            _ChatSessionService = ChatSessionService;
+            _chatSessionService = chatSessionService;
             _mapper = mapper;
         }
 
@@ -34,41 +34,46 @@ namespace BeMyAngel.Service.Services.Implementations
 
         public Chat GetById(int ChatId, Session session)
         {
-            var Chat = _repository.GetById(ChatId);
-            CheckUserPermission(Chat.ChatId, session);
-            return _mapper.Map<Chat>(Chat);
+            var chat = _repository.GetById(ChatId);
+            CheckUserPermission(chat.ChatId, session);
+            return _mapper.Map<Chat>(chat);
         }
 
         public Chat GetByIdentifier(string identifier, Session session)
         {
-            var Chat = _repository.GetByIdentifier(identifier);
-            CheckUserPermission(Chat.ChatId, session);
-            return _mapper.Map<Chat>(Chat);
+            var chat = _repository.GetByIdentifier(identifier);
+            CheckUserPermission(chat.ChatId, session);
+            return _mapper.Map<Chat>(chat);
         }
 
         public Chat GetCurrentBySession(Session session)
         {
-            var ChatSessionsDto = _ChatSessionService.GetBySessionId(session.SessionId);
-            if(ChatSessionsDto == null) //If the session doesnt have a chat for it, then create it
+            var chatSessionsDto = _chatSessionService.GetBySessionId(session.SessionId);
+            if(chatSessionsDto != null)
+                return _mapper.Map<Chat>(_repository.GetById(chatSessionsDto.ChatId));
+            return null;
+        }
+
+        public Chat Create(Session session)
+        {
+            var chat = GetCurrentBySession(session);
+            if (chat != null)
+                throw new ForbidException($"Session `{session.Token}` can't create a new chat room");
+
+            var newChat = new ChatDto
             {
-                var newChat = new ChatDto
-                {
-                    CreatedAt = DateTime.Now
-                };
+                CreatedAt = DateTime.Now
+            };
 
-                do
-                {
-                    newChat.Identifier = Guid.NewGuid().ToString().ToUpper();
-                }
-                while (_repository.GetByIdentifier(newChat.Identifier) != null);
-
-                var newChatDto = _repository.GetById(_repository.Insert(newChat));
-                _ChatSessionService.AddSessionToChat(newChatDto.ChatId, session.SessionId);
-                return _mapper.Map<Chat>(newChatDto);
+            do
+            {
+                newChat.Identifier = Guid.NewGuid().ToString().ToUpper();
             }
-            else
-                return _mapper.Map<Chat>(_repository.GetById(ChatSessionsDto.ChatId));
-            
+            while (_repository.GetByIdentifier(newChat.Identifier) != null);
+
+            var newChatDto = _repository.GetById(_repository.Insert(newChat));
+            _chatSessionService.AddSessionToChat(newChatDto.ChatId, session.SessionId);
+            return _mapper.Map<Chat>(newChatDto);
         }
     }
 }

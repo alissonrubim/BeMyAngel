@@ -5,6 +5,6 @@ namespace BeMyAngel.Api.Hubs
 {
     public interface IChatHub
     {
-        void ReceiveMessage(HubEventResponse hubEvent);
+        Task SendMessage(string chatIdentifier, string chatSessionToken, HubEventResponse eventResponse);
     }
 }

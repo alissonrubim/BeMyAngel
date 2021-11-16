@@ -18,40 +18,43 @@ namespace BeMyAngel.Api.Controllers
     {
         private readonly IChatHub _chatHub;
         private readonly ISessionManager _sessionManager;
-        private readonly IChatEventService _ChatEventService;
-        private readonly IChatSessionService _ChatSessionService;
+        private readonly IChatService _chatService;
+        private readonly IChatEventService _chatEventService;
+        private readonly IChatSessionService _chatSessionService;
 
         public ChatEventController(IChatHub chatHub, 
                                        ISessionManager sessionManager, 
-                                       IChatEventService ChatEventService,
-                                       IChatSessionService ChatSessionService)
+                                       IChatService chatService,
+                                       IChatEventService chatEventService,
+                                       IChatSessionService chatSessionService)
         {
             _chatHub = chatHub;
             _sessionManager = sessionManager;
-            _ChatEventService = ChatEventService;
-            _ChatSessionService = ChatSessionService;
+            _chatService = chatService;
+            _chatEventService = chatEventService;
+            _chatSessionService = chatSessionService;
         }
 
         [HttpGet("{ChatId}")]
         [ProducesResponseType(typeof(IEnumerable<HubEventResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        public IActionResult GetAll(int ChatId)
+        public IActionResult GetAll(int chatId)
         {
             var result = new List<HubEventResponse>();
             try
             {
                 var session = _sessionManager.GetCurrentSession(HttpContext);
-                var ChatEvents = _ChatEventService.GetAllByChatId(ChatId, session.SessionId);
-                foreach (var ChatEvent in ChatEvents)
+                var chatEvents = _chatEventService.GetAllByChatId(chatId, session.SessionId);
+                foreach (var chatEvent in chatEvents)
                 {
-                    var ChatSession = _ChatSessionService.Get(ChatEvent.ChatSessionId);
+                    var chatSession = _chatSessionService.Get(chatEvent.ChatSessionId);
                     result.Add(new HubEventResponse
                     {
-                        ChatEventId = ChatEvent.ChatEventId,
-                        ChatEventTypeId = ChatEvent.ChatEventTypeId,
-                        ChatSessionToken = ChatSession.Token,
-                        CreatedAt = ChatEvent.CreatedAt,
-                        Data = ChatEvent.Data
+                        ChatEventId = chatEvent.ChatEventId,
+                        ChatEventTypeId = chatEvent.ChatEventTypeId,
+                        ChatSessionToken = chatSession.Token,
+                        CreatedAt = chatEvent.CreatedAt,
+                        Data = chatEvent.Data
                     });
                 }
             }
@@ -68,19 +71,21 @@ namespace BeMyAngel.Api.Controllers
         public IActionResult PostMessage(PostMessageRequest request)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
-            var ChatEventId = _ChatEventService.CreatePostMessageEvent(request.ChatId, request.Message, session);
-            var ChatEvent = _ChatEventService.GetById(ChatEventId);
-            var ChatSession = _ChatSessionService.Get(ChatEvent.ChatId, session.SessionId);
+            var chat = _chatService.GetById(request.ChatId, session); 
+            var chatEventId = _chatEventService.CreatePostMessageEvent(chat.ChatId, request.Message, session);
+            var chatEvent = _chatEventService.GetById(chatEventId);
+            var chatSession = _chatSessionService.Get(chatEvent.ChatId, session.SessionId);
             var result = new HubEventResponse
             {
-                ChatEventId = ChatEvent.ChatEventId,
-                ChatEventTypeId = ChatEvent.ChatEventTypeId,
-                ChatSessionToken = ChatSession.Token,
-                CreatedAt = ChatEvent.CreatedAt,
-                Data = ChatEvent.Data
+                ChatEventId = chatEvent.ChatEventId,
+                ChatEventTypeId = chatEvent.ChatEventTypeId,
+                ChatSessionToken = chatSession.Token,
+                CreatedAt = chatEvent.CreatedAt,
+                Data = chatEvent.Data
             };
 
-            //_chatHub.Clients.All.ReceiveMessage(result);
+            _chatHub.SendMessage(chat.Identifier, chatSession.Token, result);
+
             return Created(string.Empty, result);
         }
 
