@@ -24,13 +24,13 @@ namespace BeMyAngel.Service
             _persistanceStartup.ConfigureServices(services);
 
             /** Register Services **/
-            services.AddScoped<IChatRoomService, ChatRoomService>();
+            services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
             services.AddScoped<ISessionService, SessionService>();
-            services.AddScoped<IChatRoomEventService, ChatRoomEventService>();
-            services.AddScoped<IChatRoomSessionService, ChatRoomSessionService>();
+            services.AddScoped<IChatEventService, ChatEventService>();
+            services.AddScoped<IChatSessionService, ChatSessionService>();
         }
 
         public void Configure(IServiceProvider serviceProvider)

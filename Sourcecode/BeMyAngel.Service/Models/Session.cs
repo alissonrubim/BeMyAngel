@@ -14,6 +14,5 @@ namespace BeMyAngel.Service.Models
         public int LocalPort { get; set; }
         public string RemoteIpAddress { get; set; }
         public int RemotePort { get; set; }
-        public string ConnectionIdentifier { get; set; }
     }
 }

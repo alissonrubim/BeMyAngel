@@ -1,10 +1,10 @@
-﻿using BeMyAngel.Api.Presentations.ChatRoomEventController;
+﻿using BeMyAngel.Api.Presentations.ChatEventController;
 using System.Threading.Tasks;
 
 namespace BeMyAngel.Api.Hubs
 {
     public interface IChatHub
     {
-        Task ReceiveMessage(HubEventResponse hubEvent);
+        void ReceiveMessage(HubEventResponse hubEvent);
     }
 }

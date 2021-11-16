@@ -1,7 +1,7 @@
-﻿namespace BeMyAngel.Api.Presentations.ChatRoomSession
+﻿namespace BeMyAngel.Api.Presentations.ChatSession
 {
-    public class AssignToChatRoomRequest
+    public class AssignToChatRequest
     {
-        public int ChatRoomId { get; set; }
+        public int ChatId { get; set; }
     }
 }

@@ -6,6 +6,6 @@ namespace BeMyAngel.Persistance.Helpers
 {
     internal class DatabaseConfiguration
     {
-        public bool ConnectDirectToDatabase { get; set; } = false;
+        public bool ConnectDirectToDatabase { get; set; } = true;
     }
 }

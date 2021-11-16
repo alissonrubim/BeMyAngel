@@ -1,8 +1,8 @@
 ﻿namespace BeMyAngel.Service.Models
 {
-    public class ChatRoomEventType
+    public class ChatEventType
     {
-        public int ChatRoomEventTypeId { get; set; }
+        public int ChatEventTypeId { get; set; }
         public string Identifier { get; set; }
         public string Description { get; set; }
     }

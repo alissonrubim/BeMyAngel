@@ -5,9 +5,9 @@ using System.Text;
 
 namespace BeMyAngel.Service.Services
 {
-    public interface IChatRoomService
+    public interface IChatService
     {
-        ChatRoom GetCurrentBySession(Session session);
-        ChatRoom GetById(int chatRoomId, Session session);
+        Chat GetCurrentBySession(Session session);
+        Chat GetById(int ChatId, Session session);
     }
 }

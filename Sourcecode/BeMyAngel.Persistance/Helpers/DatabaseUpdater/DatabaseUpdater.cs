@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BeMyAngel.Persistance.Helpers.DatabaseUpdater
 {
@@ -25,11 +26,17 @@ namespace BeMyAngel.Persistance.Helpers.DatabaseUpdater
             _databaseSchemaRepostory = databaseSchemaRepostory;
         }
 
+        private void RunScript(string script)
+        {
+            foreach (var scriptPiece in script.Split("GO\r\n"))
+                if (!string.IsNullOrEmpty(scriptPiece))
+                    _database.Execute(scriptPiece);
+        }
+
         private void RunFile(Version version)
         {
             var script = File.ReadAllText(Path.Combine(_settings.AutoUpdater.ScriptsDirectory, $"{version}.sql"));
-            foreach (var scriptPiece in script.Split("GO\r\n"))
-                _database.Execute(scriptPiece);
+            RunScript(script);
 
             if (_settingRepository.GetByIdentifier("DatabaseVersion") == null)
                 _settingRepository.Insert("DatabaseVersion", version.ToString());
@@ -39,7 +46,7 @@ namespace BeMyAngel.Persistance.Helpers.DatabaseUpdater
         
         private void UpdateFrom(Version currentDatabaseVersion)
         {
-            var updateFiles = Directory.GetFiles(_settings.AutoUpdater.ScriptsDirectory, "*.sql");
+            var updateFiles = Directory.GetFiles(_settings.AutoUpdater.ScriptsDirectory, "*.sql").Where(x => Regex.Match(x, @"\d+.\d+.\d+.\d+", RegexOptions.IgnoreCase).Success);
             var updateVersions = new List<Version>();
             foreach(var updateFile in updateFiles)
                 updateVersions.Add(new Version(Path.GetFileNameWithoutExtension(updateFile)));
@@ -53,13 +60,21 @@ namespace BeMyAngel.Persistance.Helpers.DatabaseUpdater
                 
             }
 
+            var hadUpdate = false;
             foreach (var updateVersion in updateVersions.OrderBy(x => x))
             {
                 if (currentDatabaseVersion == null || updateVersion > currentDatabaseVersion) 
                 {
                     RunFile(updateVersion);
+                    hadUpdate = true;
                     currentDatabaseVersion = updateVersion;
                 }
+            }
+
+            if (hadUpdate)
+            {
+                RunScript(File.ReadAllText(Path.Combine(_settings.AutoUpdater.ScriptsDirectory, $"data.sql")));
+                RunScript(File.ReadAllText(Path.Combine(_settings.AutoUpdater.ScriptsDirectory, $"data.test.sql")));
             }
         }
 

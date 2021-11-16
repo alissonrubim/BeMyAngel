@@ -1,11 +1,11 @@
 ﻿using BeMyAngel.Service.Models;
 using System.Collections.Generic;
 
-namespace BeMyAngel.Api.Presentations.ChatRoomController
+namespace BeMyAngel.Api.Presentations.ChatController
 {
     public class GetCurrentResponse
     {
-        public ChatRoom ChatRoom { get; set; }
-        public string MyChatRoomSessionToken { get; set; }
+        public Chat Chat { get; set; }
+        public string MyChatSessionToken { get; set; }
     }
 }

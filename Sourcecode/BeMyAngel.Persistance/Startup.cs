@@ -23,13 +23,13 @@ namespace BeMyAngel.Persistance
 
             /** Register Repositories **/
             services.AddScoped<IDatabaseSchemaRepostory, DatabaseSchemaRepostory>();
-            services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
-            services.AddScoped<IChatRoomSessionRepository, ChatRoomSessionRepository>();
-            services.AddScoped<IChatRoomEventRepository, ChatRoomEventRepository>();
+            services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
+            services.AddScoped<IChatEventRepository, ChatEventRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
         }
 

@@ -4,10 +4,10 @@ using System.Text;
 
 namespace BeMyAngel.Service.Models
 {
-    public class ChatRoomSession
+    public class ChatSession
     { 
-        public int ChatRoomSessionId { get; set; }
-        public int ChatRoomId { get; set; }
+        public int ChatSessionId { get; set; }
+        public int ChatId { get; set; }
         public int SessionId { get; set; }
         public string Token { get; set; }
     }

@@ -1,5 +1,5 @@
 ﻿using BeMyAngel.Api.Helpers.SessionManager;
-using BeMyAngel.Api.Presentations.ChatRoomSession;
+using BeMyAngel.Api.Presentations.ChatSession;
 using BeMyAngel.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,26 +10,26 @@ namespace BeMyAngel.Api.Controllers
     [Route("[controller]")]
     [ApiController]
     [CheckSession]
-    public class ChatRoomSessionController : ControllerBase
+    public class ChatSessionController : ControllerBase
     {
-        private readonly IChatRoomSessionService _chatRoomSessionService;
+        private readonly IChatSessionService _ChatSessionService;
         private readonly ISessionManager _sessionManager;
 
-        public ChatRoomSessionController(IChatRoomSessionService chatRoomSessionService,
+        public ChatSessionController(IChatSessionService ChatSessionService,
                                   ISessionManager sessionManager)
         {
-            _chatRoomSessionService = chatRoomSessionService;
+            _ChatSessionService = ChatSessionService;
             _sessionManager = sessionManager;
         }
 
         [Authorize]
-        [HttpPost("AssignToChatRoom")]
+        [HttpPost("AssignToChat")]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        public void AssignToChatRoom(AssignToChatRoomRequest request)
+        public void AssignToChat(AssignToChatRequest request)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
-            _chatRoomSessionService.AddSessionToChatRoom(request.ChatRoomId, session.SessionId);
+            _ChatSessionService.AddSessionToChat(request.ChatId, session.SessionId);
         }
     }
 }

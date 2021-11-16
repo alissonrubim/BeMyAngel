@@ -23,8 +23,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                     [LocalIpAddress], 
                                                     [LocalPort], 
                                                     [RemoteIpAddress],
-                                                    [RemotePort],
-                                                    [ConnectionIdentifier]
+                                                    [RemotePort]
                                                 FROM [dbo].[Session] WHERE [Token] = @Token", new { Token });
         }
 
@@ -40,8 +39,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                     [LocalIpAddress], 
                                                     [LocalPort], 
                                                     [RemoteIpAddress],
-                                                    [RemotePort],
-                                                    [ConnectionIdentifier]
+                                                    [RemotePort]
                                                 FROM [dbo].[Session] WHERE [SessionId] = @SessionId", new { SessionId });
         }
 
@@ -57,8 +55,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                     [LocalIpAddress], 
                                                     [LocalPort], 
                                                     [RemoteIpAddress],
-                                                    [RemotePort],
-                                                    [ConnectionIdentifier]
+                                                    [RemotePort]
                                          ) 
                                         OUTPUT INSERTED.SessionId 
                                         VALUES(
@@ -70,8 +67,7 @@ namespace BeMyAngel.Persistance.Repositories.Implementations
                                                     @LocalIpAddress,
                                                     @LocalPort,
                                                     @RemoteIpAddress,
-                                                    @RemotePort,
-                                                    @ConnectionIdentifier
+                                                    @RemotePort
                                          )", Session);
         }
 

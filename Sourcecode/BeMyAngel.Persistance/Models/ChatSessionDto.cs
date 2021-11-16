@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BeMyAngel.Persistance.Models
 {
-    public class ChatRoomSessionDto
+    public class ChatSessionDto
     {
-        public int ChatRoomSessionId { get; set; }
-        public int ChatRoomId { get; set; }
+        public int ChatSessionId { get; set; }
+        public int ChatId { get; set; }
         public int SessionId { get; set; }
         public string Token { get; set; }
     }

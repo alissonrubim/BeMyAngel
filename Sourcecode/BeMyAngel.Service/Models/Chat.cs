@@ -2,10 +2,11 @@
 
 namespace BeMyAngel.Service.Models
 {
-    public class ChatRoom
+    public class Chat
     {
-        public int ChatRoomId { get; set; }
+        public int ChatId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? TerminatedAt { get; set; }
+        public string Identifier { get; set; }
     }
 }

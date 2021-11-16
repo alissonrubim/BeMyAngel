@@ -31,6 +31,7 @@ namespace BeMyAngel.Api
 
             /** Add Signal IR **/
             services.AddSignalR();
+            services.AddScoped<IChatHub, ChatHub>();
 
             services.AddCors(options =>
             {

@@ -1,5 +1,5 @@
 ﻿using BeMyAngel.Api.Helpers.SessionManager;
-using BeMyAngel.Api.Presentations.ChatRoomController;
+using BeMyAngel.Api.Presentations.ChatController;
 using BeMyAngel.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,18 +10,18 @@ namespace BeMyAngel.Api.Controllers
     [Route("[controller]")]
     [ApiController]
     [CheckSession]
-    public class ChatRoomController : ControllerBase
+    public class ChatController : ControllerBase
     {
-        private readonly IChatRoomService _chatRoomService;
-        private readonly IChatRoomSessionService _chatRoomSessionService;
+        private readonly IChatService _chatService;
+        private readonly IChatSessionService _chatSessionService;
         private readonly ISessionManager _sessionManager;
 
-        public ChatRoomController(IChatRoomService chatRoomService, 
-                                  IChatRoomSessionService chatRoomSessionService,
+        public ChatController(IChatService ChatService, 
+                                  IChatSessionService ChatSessionService,
                                   ISessionManager sessionManager)
         {
-            _chatRoomService = chatRoomService;
-            _chatRoomSessionService = chatRoomSessionService;
+            _chatService = ChatService;
+            _chatSessionService = ChatSessionService;
             _sessionManager = sessionManager;
         }
 
@@ -30,33 +30,33 @@ namespace BeMyAngel.Api.Controllers
         public IActionResult GetCurrent()
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
-            var chatRoom = _chatRoomService.GetCurrentBySession(session);
+            var chat = _chatService.GetCurrentBySession(session);
             return Ok(new GetCurrentResponse
             {
-                ChatRoom = chatRoom,
-                MyChatRoomSessionToken = _chatRoomSessionService.Get(chatRoom.ChatRoomId, session.SessionId).Token
+                Chat = chat,
+                MyChatSessionToken = _chatSessionService.Get(chat.ChatId, session.SessionId).Token
             });
         }
 
         [Authorize]
-        [HttpGet("{ChatRoomId}")]
+        [HttpGet("{ChatId}")]
         [ProducesResponseType(typeof(GetCurrentResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public IActionResult GetById(int ChatRoomId)
+        public IActionResult GetById(int ChatId)
         {
             var session = _sessionManager.GetCurrentSession(HttpContext);
-            var chatRoom = _chatRoomService.GetById(ChatRoomId, session);
-            if (chatRoom == null)
+            var chat = _chatService.GetById(ChatId, session);
+            if (chat == null)
                 return NotFound();
-            var chatRoomSession = _chatRoomSessionService.Get(chatRoom.ChatRoomId, session.SessionId);
-            if (chatRoomSession == null)
+            var chatSession = _chatSessionService.Get(chat.ChatId, session.SessionId);
+            if (chatSession == null)
                 return Forbid();
             return Ok(new GetCurrentResponse
             {
-                ChatRoom = chatRoom,
-                MyChatRoomSessionToken = chatRoomSession.Token
+                Chat = chat,
+                MyChatSessionToken = chatSession.Token
             });
         }
     }

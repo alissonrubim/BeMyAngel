@@ -8,8 +8,8 @@ namespace BeMyAngel.Service.Mappers
     {
         public AutoMapperProfile()
         {
-            CreateMap<ChatRoom, ChatRoomDto>();
-            CreateMap<ChatRoomDto, ChatRoom>();
+            CreateMap<Chat, ChatDto>();
+            CreateMap<ChatDto, Chat>();
 
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
@@ -20,11 +20,11 @@ namespace BeMyAngel.Service.Mappers
             CreateMap<Session, SessionDto>();
             CreateMap<SessionDto, Session>();
 
-            CreateMap<ChatRoomEvent, ChatRoomEventDto>();
-            CreateMap<ChatRoomEventDto, ChatRoomEvent>();
+            CreateMap<ChatEvent, ChatEventDto>();
+            CreateMap<ChatEventDto, ChatEvent>();
 
-            CreateMap<ChatRoomSession, ChatRoomSessionDto>();
-            CreateMap<ChatRoomSessionDto, ChatRoomSession>();
+            CreateMap<ChatSession, ChatSessionDto>();
+            CreateMap<ChatSessionDto, ChatSession>();
         }
     }
 }

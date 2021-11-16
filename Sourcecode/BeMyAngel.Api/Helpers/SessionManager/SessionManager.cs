@@ -84,7 +84,6 @@ namespace BeMyAngel.Api.Helpers.SessionManager
                 LocalPort = httpContext.Connection.LocalPort,
                 RemoteIpAddress = httpContext.Connection.RemoteIpAddress.ToString(),
                 RemotePort = httpContext.Connection.RemotePort,
-                ConnectionIdentifier = httpContext.Connection.Id,
                 UserAgent = httpContext.Request.Headers["User-Agent"]
             });
             var session = _sessionService.GetById(sessionId);
