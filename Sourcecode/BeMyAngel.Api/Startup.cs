@@ -152,7 +152,8 @@ namespace BeMyAngel.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<ChatHub>("/hubs/chat");
+                foreach (var hubRoute in ChatHub.GetRoutes())
+                    endpoints.MapHub<ChatHub>(hubRoute);
                 endpoints.MapControllers();
             });
 

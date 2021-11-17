@@ -35,14 +35,16 @@ namespace BeMyAngel.Service.Services.Implementations
         public Chat GetById(int ChatId, Session session)
         {
             var chat = _repository.GetById(ChatId);
-            CheckUserPermission(chat.ChatId, session);
+            if (chat != null)
+                CheckUserPermission(chat.ChatId, session);
             return _mapper.Map<Chat>(chat);
         }
 
         public Chat GetByIdentifier(string identifier, Session session)
         {
             var chat = _repository.GetByIdentifier(identifier);
-            CheckUserPermission(chat.ChatId, session);
+            if(chat != null)
+                CheckUserPermission(chat.ChatId, session);
             return _mapper.Map<Chat>(chat);
         }
 

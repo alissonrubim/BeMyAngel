@@ -1,5 +1,6 @@
 ﻿using BeMyAngel.Api.Helpers.SessionManager;
 using BeMyAngel.Api.Presentations.ChatEventController;
+using BeMyAngel.Service.Models;
 using BeMyAngel.Service.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -17,6 +18,31 @@ namespace BeMyAngel.Api.Hubs
         private readonly IChatSessionService _chatSessionService;
         protected IHubContext<ChatHub> _hubContext;
 
+        public static string[] GetRoutes()
+        {
+            return new string[]{"/hubs/chat/{ChatSessionToken}"};
+        }
+
+        private string GetParameterFromPath(HttpContext httpContext, string parameter) {
+            var paths = httpContext.Request.Path.Value.Split('/').Where(x => x != string.Empty).ToList();
+            string result = null;
+
+            foreach(var route in GetRoutes())
+            {
+                var routePaths = route.Split('/').Where(x => x != string.Empty).ToList();
+                if(routePaths.Count() == paths.Count())
+                {
+                    for(var i=0; i< routePaths.Count(); i++)
+                    {
+                        if (routePaths[i] == $"{{{parameter}}}")
+                            result = paths[i];
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public ChatHub(IHubContext<ChatHub> hubContext, ISessionManager sessionManager, IChatService chatService, IChatSessionService chatSessionService): base()
         {
             _sessionManager = sessionManager;
@@ -28,13 +54,14 @@ namespace BeMyAngel.Api.Hubs
         public override Task OnConnectedAsync()
         {
             var session = _sessionManager.GetCurrentSession(Context.GetHttpContext());
-            var chat = _chatService.GetCurrentBySession(session);
-
-            if (chat == null)
-                throw new Exception($"Session {session.Token} does not have an valid chat to connect to.");
+            var chatSessionToken = GetParameterFromPath(Context.GetHttpContext(), "ChatSessionToken");
+            var chatSession = _chatSessionService.GetByToken(chatSessionToken);
+            
+            if (chatSession == null)
+                throw new Exception($"Session {session.Token} does not have an valid chat session to connect to.");
 
             //When a new connection comes in, it going to update the ConnectionId at the ChatSession and asign this new connection to a group
-            var chatSession = _chatSessionService.Get(chat.ChatId, session.SessionId);
+            var chat = _chatService.GetById(chatSession.ChatId, session);
             if(chatSession.ConnectionId == null || chatSession.ConnectionId != Context.ConnectionId)
             {
                 _chatSessionService.DefineConnectionId(chatSession.ChatSessionId, Context.ConnectionId);
